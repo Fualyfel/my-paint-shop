@@ -1,12 +1,15 @@
 package model;
 
+import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 
 public class Ellipse extends javafx.scene.shape.Ellipse implements Drawable {
 
 	double startingX;
 	double startingY;
+	
 	public Ellipse() {
+		super();
 		setFill(Color.TRANSPARENT);
 		setStroke(Color.BLACK);
 	}
@@ -35,6 +38,15 @@ public class Ellipse extends javafx.scene.shape.Ellipse implements Drawable {
 	@Override
 	public void setX(double startingX) {
 		setCenterX(startingX);
+	}
+	
+	public void draw(MouseEvent event, double startingX, double startingY) {
+		double currentX = event.getX();
+		double currentY = event.getY();
+		setWidth(Math.abs(currentX - startingX));
+		setHeight(Math.abs(currentY - startingY));
+		setX(startingX);
+		setY(startingY);
 	}
 
 }

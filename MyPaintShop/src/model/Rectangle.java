@@ -33,4 +33,27 @@ public class Rectangle extends javafx.scene.shape.Rectangle implements Drawable 
 	public void setStartingY(double startingY) {
 		this.startingY = startingY;
 	}
+	
+	public void draw(MouseEvent event, double startingX, double startingY) {
+		double currentX = event.getX();
+		double currentY = event.getY();
+		setWidth(Math.abs(currentX - startingX));
+		setHeight(Math.abs(currentY - startingY));
+		if (currentX > startingX && currentY > startingY) {
+			setX(startingX);
+			setY(startingY);
+		}
+		else if (currentX < startingX && currentY > startingY) {
+			setX(currentX);
+			setY(startingY);
+		}
+		else if (currentX > startingX && currentY < startingY) {
+			setX(startingX);
+			setY(currentY);
+		}
+		else if (currentX < startingX && currentY < startingY) {
+			setX(currentX);
+			setY(currentY);
+		}
+	}
 }

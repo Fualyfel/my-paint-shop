@@ -11,6 +11,7 @@ public class Triangle extends javafx.scene.shape.Polygon implements Drawable {
 	private final int sides = 3;
 	private double horizontalLength;
 	private double verticalLength;
+	
 	public void draw(MouseEvent event, double startingX, double startingY) {
 		currentX = event.getX();
 		currentY = event.getY();
