@@ -2,7 +2,9 @@ package model;
 
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
-
+/*
+ * Defines an Ellipse with a 
+ */
 public class Ellipse extends javafx.scene.shape.Ellipse implements Drawable {
 
 	double startingX;
@@ -20,33 +22,15 @@ public class Ellipse extends javafx.scene.shape.Ellipse implements Drawable {
 		this.startingX = startingX;
 		this.startingY = startingY;
 	}
-	@Override
-	public void setHeight(double abs) {
-		setRadiusY(abs);
-	}
 
-	@Override
-	public void setWidth(double abs) {
-		setRadiusX(abs);
-	}
-
-	@Override
-	public void setY(double startingY) {
-		setCenterY(startingY);
-	}
-
-	@Override
-	public void setX(double startingX) {
-		setCenterX(startingX);
-	}
 	
 	public void draw(MouseEvent event, double startingX, double startingY) {
 		double currentX = event.getX();
 		double currentY = event.getY();
-		setWidth(Math.abs(currentX - startingX));
-		setHeight(Math.abs(currentY - startingY));
-		setX(startingX);
-		setY(startingY);
+		setRadiusX(Math.abs(currentX - startingX));
+		setRadiusY(Math.abs(currentY - startingY));
+		setCenterX(startingX);
+		setCenterY(startingY);
 	}
 
 }

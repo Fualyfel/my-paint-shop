@@ -1,8 +1,6 @@
 package view;
 
 import javafx.application.Application;
-import javafx.application.ConditionalFeature;
-import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -14,11 +12,13 @@ public class View extends Application {
 		launch(args);
 	}
 
+	private FXMLLoader loader = new FXMLLoader(getClass().getResource("PrimaryStage.fxml"));
+	
 	
 	
 	@Override
 	public void start(Stage primaryStage) throws Exception {
-        Parent root = FXMLLoader.load(getClass().getResource("PrimaryStage.fxml"));
+        Parent root = loader.load(getClass().getResource("PrimaryStage.fxml"));
         primaryStage.setTitle("My Paint Shop");
         Scene scene = new Scene(root, 1280, 720);
         primaryStage.setScene(scene); 

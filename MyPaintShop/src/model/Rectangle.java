@@ -6,6 +6,7 @@ import javafx.scene.paint.Color;
 public class Rectangle extends javafx.scene.shape.Rectangle implements Drawable {
 	double startingX;
 	double startingY;
+	
 	public Rectangle() {
 		setFill(Color.TRANSPARENT);
 		setStroke(Color.BLACK);
