@@ -1,13 +1,9 @@
 package model;
 
-import controller.Controller.Drag;
-import controller.Controller.DragStarter;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 
-public class Triangle extends javafx.scene.shape.Polygon implements Drawable {
-	private double startingX;
-	private double startingY;
+public class Triangle extends javafx.scene.shape.Polygon implements Drawable, Cloneable {
 	
 	private final int sides = 3;
 	
@@ -26,12 +22,5 @@ public class Triangle extends javafx.scene.shape.Polygon implements Drawable {
 		setFill(Color.TRANSPARENT);
 		setStroke(Color.BLACK);
 	}
-
-	public Triangle(double startingX, double startingY) {
-		setFill(Color.TRANSPARENT);
-		setStroke(Color.BLACK);
-		this.startingX = startingX;
-		this.startingY = startingY;
-	}
-
+	
 }

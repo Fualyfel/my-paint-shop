@@ -1,7 +1,5 @@
 package controller;
 
-import controller.Controller.Drag;
-import controller.Controller.DragStarter;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -15,11 +13,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Shape;
-import model.Drawable;
-import model.Ellipse;
 import model.Model;
-import model.Rectangle;
-import model.Triangle;
 
 public class Controller {
 	private Model model;
@@ -40,22 +34,13 @@ public class Controller {
 	@FXML
 	ColorPicker fillColor;
 
-	ToggleGroup shapeChooser = new ToggleGroup();
-	
-	
+	ToggleGroup shapeGroup = new ToggleGroup();
 
-	Shape shape;
 
-	double startingX = 0.0;
-	double startingY = 0.0;
-	double terminalX = 0.0;
-	double terminalY = 0.0;
-	
+
 	public void setModel(Model model) {
 		this.model = model;
 	}
-	
-	
 
 	/*
 	 * initialize() is called whenever the application is launched. ( similar to
@@ -64,14 +49,16 @@ public class Controller {
 	@FXML
 	private void initialize() {
 		setModel(new Model());
+		model.setController(this);
 		bindCanvasToPane();
 		canvas.addEventHandler(MouseEvent.DRAG_DETECTED, new DragStarter());
 		canvas.setOnMouseDragOver(new Drag());
+		canvas.setOnMousePressed(new BrushDraw());
 		clipChildren(mainPane);
-		circleToggle.setToggleGroup(shapeChooser);
-		triangleToggle.setToggleGroup(shapeChooser);
-		rectangleToggle.setToggleGroup(shapeChooser);
-		lineToggle.setToggleGroup(shapeChooser);
+		circleToggle.setToggleGroup(shapeGroup);
+		triangleToggle.setToggleGroup(shapeGroup);
+		rectangleToggle.setToggleGroup(shapeGroup);
+		lineToggle.setToggleGroup(shapeGroup);
 		borderColor.setValue(Color.BLACK);
 	}
 
@@ -81,39 +68,38 @@ public class Controller {
 	public class DragStarter implements EventHandler<MouseEvent> {
 		@Override
 		public void handle(MouseEvent event) {
-			if (shapeChooser.getSelectedToggle() != lineToggle) {
-				if (shapeChooser.getSelectedToggle() == circleToggle) {
+			((Node) event.getSource()).startFullDrag();
+			if (shapeGroup.getSelectedToggle() != lineToggle) {
+				if (shapeGroup.getSelectedToggle() == circleToggle) {
 					model.addShapeToPane("ellipse", event, mainPane);
-				} else if (shapeChooser.getSelectedToggle() == rectangleToggle) {
+				} else if (shapeGroup.getSelectedToggle() == rectangleToggle) {
 					model.addShapeToPane("rectangle", event, mainPane);
-				} else if (shapeChooser.getSelectedToggle() == triangleToggle) {
+				} else if (shapeGroup.getSelectedToggle() == triangleToggle) {
 					model.addShapeToPane("triangle", event, mainPane);
 				}
-				shape.addEventHandler(MouseEvent.DRAG_DETECTED, new DragStarter());
-				shape.setOnMouseDragOver(new Drag());
-			}
-			else {
-		        GraphicsContext context = canvas.getGraphicsContext2D();
-		        context.setFill(Color.BLACK);
-		        context.beginPath();
-		        context.moveTo(event.getX(), event.getY());
-		        context.stroke();
 			}
 		}
+	}
+
+	public class BrushDraw implements EventHandler<MouseEvent> {
+
+		@Override
+		public void handle(MouseEvent event) {
+			System.out.println("Pressed");
+			if (shapeGroup.getSelectedToggle() == lineToggle) {
+				model.drawBrush(event, canvas.getGraphicsContext2D());
+			}
+		}
+
 	}
 
 	public class Drag implements EventHandler<MouseEvent> {
 		@Override
 		public void handle(MouseEvent event) {
-			if (shapeChooser.getSelectedToggle() != lineToggle) {
-			model.drawShape(event, shape);
-			}
-			else {
-	            final GraphicsContext graphicsContext = canvas.getGraphicsContext2D();
-	            graphicsContext.lineTo(event.getX(), event.getY());
-	            graphicsContext.setLineWidth(5);
-	            graphicsContext.stroke();
-	            
+			if (shapeGroup.getSelectedToggle() != lineToggle) {
+				model.drawShape(event, model.getShape());
+			} else {
+				model.drawBrush(event, canvas.getGraphicsContext2D());
 			}
 		}
 
