@@ -36,9 +36,7 @@
             <MenuItem mnemonicParsing="false" text="Close" />
             <MenuItem mnemonicParsing="false" text="Save" />
             <MenuItem mnemonicParsing="false" text="Save As…" />
-            <MenuItem mnemonicParsing="false" text="Revert" />
             <SeparatorMenuItem mnemonicParsing="false" />
-            <MenuItem mnemonicParsing="false" text="Preferences…" />
             <SeparatorMenuItem mnemonicParsing="false" />
             <MenuItem mnemonicParsing="false" text="Quit" />
           </items>
@@ -57,6 +55,11 @@
             <MenuItem mnemonicParsing="false" text="Unselect All" />
           </items>
         </Menu>
+            <Menu mnemonicParsing="false" text="Help">
+              <items>
+                <MenuItem mnemonicParsing="false" text="About" />
+              </items>
+            </Menu>
       </menus>
     </MenuBar>
       <ToolBar prefHeight="40.0" prefWidth="200.0">
@@ -65,12 +68,12 @@
             <Button mnemonicParsing="false" text="Duplicate Shape" />
         </items>
       </ToolBar>
-      <SplitPane dividerPositions="0.32316118935837246, 0.5845070422535211">
+      <SplitPane dividerPositions="0.3904538341158059, 0.6924882629107981">
          <VBox.margin>
             <Insets />
          </VBox.margin>
          <items>
-            <HBox prefHeight="95.0" prefWidth="498.0" spacing="25.0" style="-fx-background-color: #DCDCDC;">
+            <HBox prefHeight="88.0" prefWidth="445.0" spacing="25.0" style="-fx-background-color: #DCDCDC;">
                <children>
                   <ToggleButton fx:id="circleToggle" mnemonicParsing="false">
                      <graphic>
@@ -92,6 +95,14 @@
                         <Line endX="-61.70710754394531" endY="-38.631080627441406" startX="-14.414215087890625" startY="-2.3381881713867188" stroke="WHITE" />
                      </graphic>
                   </ToggleButton>
+                  <ToggleButton fx:id="brushToggle" layoutX="327.0" layoutY="40.0" mnemonicParsing="false" prefHeight="47.0" prefWidth="82.0" text="Brush" textAlignment="CENTER">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                     <HBox.margin>
+                        <Insets />
+                     </HBox.margin>
+                  </ToggleButton>
                </children>
                <padding>
                   <Insets left="20.0" top="30.0" />
@@ -99,7 +110,7 @@
             </HBox>
             <HBox prefHeight="88.0" prefWidth="905.0" spacing="5.0">
                <children>
-                  <Label alignment="CENTER" prefHeight="88.0" prefWidth="122.0" text="Border">
+                  <Label alignment="CENTER" prefHeight="88.0" prefWidth="116.0" text="Border">
                      <font>
                         <Font size="36.0" />
                      </font>
@@ -166,20 +177,6 @@
                <padding>
                   <Insets bottom="5.0" />
                </padding>
-            </HBox>
-            <HBox prefHeight="100.0" prefWidth="200.0">
-               <children>
-                  <Label text="Area:">
-                     <HBox.margin>
-                        <Insets left="20.0" top="20.0" />
-                     </HBox.margin>
-                  </Label>
-                  <Label layoutX="10.0" layoutY="10.0" text=" ">
-                     <HBox.margin>
-                        <Insets left="20.0" top="20.0" />
-                     </HBox.margin>
-                  </Label>
-               </children>
             </HBox>
          </children>
       </HBox>

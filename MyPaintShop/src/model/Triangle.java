@@ -5,22 +5,20 @@ import javafx.scene.paint.Color;
 
 public class Triangle extends javafx.scene.shape.Polygon implements Drawable, Cloneable {
 	
-	private final int sides = 3;
+	private double width;
+	private double height;
 	
-	public void draw(MouseEvent event, double startingX, double startingY) {
-		getPoints().clear();
-		final double angleStep = Math.PI * 2 / sides;
-		double angle = Math.PI; // assuming one point above center
-		for (int i = 0; i < sides; i++, angle += angleStep) {
-			getPoints().addAll(Math.sin(angle) * Math.abs(event.getX() - startingX) + startingX, // x coordinate of the corner
-					Math.cos(angle) * Math.abs(event.getY() - startingY) + startingY // y coordinate of the corner
-			);
-		}
-	}
-
 	public Triangle() {
 		setFill(Color.TRANSPARENT);
 		setStroke(Color.BLACK);
+	}
+	
+	public void draw(MouseEvent event, double startingX, double startingY) {
+		width = Math.abs(event.getX() - startingX);
+		height = event.getY();
+		getPoints().clear();
+		getPoints().addAll(startingX, startingY, event.getX(), startingY);
+		getPoints().addAll(Math.abs(event.getX() + startingX)/2.0, height);
 	}
 	
 }

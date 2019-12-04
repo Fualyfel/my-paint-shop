@@ -8,6 +8,8 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
@@ -18,9 +20,9 @@ import model.Model;
 public class Controller {
 	private Model model;
 	@FXML
-	Pane mainPane;
+	public Pane mainPane;
 	@FXML
-	Canvas canvas;
+	public Canvas canvas;
 	@FXML
 	ToggleButton circleToggle;
 	@FXML
@@ -30,13 +32,13 @@ public class Controller {
 	@FXML
 	ToggleButton lineToggle;
 	@FXML
+	ToggleButton brushToggle;
+	@FXML
 	ColorPicker borderColor;
 	@FXML
 	ColorPicker fillColor;
 
 	ToggleGroup shapeGroup = new ToggleGroup();
-
-
 
 	public void setModel(Model model) {
 		this.model = model;
@@ -59,7 +61,16 @@ public class Controller {
 		triangleToggle.setToggleGroup(shapeGroup);
 		rectangleToggle.setToggleGroup(shapeGroup);
 		lineToggle.setToggleGroup(shapeGroup);
+		brushToggle.setToggleGroup(shapeGroup);
 		borderColor.setValue(Color.BLACK);
+        mainPane.getParent().addEventFilter(KeyEvent.KEY_PRESSED, (KeyEvent event) -> {
+            System.out.println("Key pressed");
+            if (event.getCode() == KeyCode.F1) {
+            	model.undo();
+                System.out.println("F1 pressed");
+            }
+            event.consume();
+        });
 	}
 
 	/*
@@ -69,24 +80,29 @@ public class Controller {
 		@Override
 		public void handle(MouseEvent event) {
 			((Node) event.getSource()).startFullDrag();
-			if (shapeGroup.getSelectedToggle() != lineToggle) {
+			if (shapeGroup.getSelectedToggle() != brushToggle) {
 				if (shapeGroup.getSelectedToggle() == circleToggle) {
 					model.addShapeToPane("ellipse", event, mainPane);
 				} else if (shapeGroup.getSelectedToggle() == rectangleToggle) {
 					model.addShapeToPane("rectangle", event, mainPane);
 				} else if (shapeGroup.getSelectedToggle() == triangleToggle) {
 					model.addShapeToPane("triangle", event, mainPane);
+				} else if (shapeGroup.getSelectedToggle() == lineToggle) {
+					model.addShapeToPane("line", event, mainPane);
 				}
 			}
 		}
 	}
 
+	/*
+	 * Handles user presses on the canvas with the brush tool selected.
+	 */
 	public class BrushDraw implements EventHandler<MouseEvent> {
 
 		@Override
 		public void handle(MouseEvent event) {
 			System.out.println("Pressed");
-			if (shapeGroup.getSelectedToggle() == lineToggle) {
+			if (shapeGroup.getSelectedToggle() == brushToggle) {
 				model.drawBrush(event, canvas.getGraphicsContext2D());
 			}
 		}
@@ -96,7 +112,7 @@ public class Controller {
 	public class Drag implements EventHandler<MouseEvent> {
 		@Override
 		public void handle(MouseEvent event) {
-			if (shapeGroup.getSelectedToggle() != lineToggle) {
+			if (shapeGroup.getSelectedToggle() != brushToggle) {
 				model.drawShape(event, model.getShape());
 			} else {
 				model.drawBrush(event, canvas.getGraphicsContext2D());
