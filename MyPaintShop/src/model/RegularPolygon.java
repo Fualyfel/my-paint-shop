@@ -1,5 +1,7 @@
 package model;
 
+import javafx.beans.property.DoubleProperty;
+import javafx.collections.ObservableList;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 
@@ -12,15 +14,34 @@ public class RegularPolygon extends javafx.scene.shape.Polygon implements Drawab
 		setFill(Color.TRANSPARENT);
 		setStroke(Color.BLACK);
 		this.sides = 3;
+		EnableDrawing(this);
 	}
 	public RegularPolygon(int sides) {
 		setFill(Color.TRANSPARENT);
 		setStroke(Color.BLACK);
 		this.sides = sides;
+		EnableDrawing(this);
+	}
+	
+	/**
+	 * @param points
+	 */
+	public RegularPolygon(double... points) {
+		super(points);
 	}
 	
 	
+	public RegularPolygon(ObservableList<Double> points) {
+		this.getPoints().addAll(points);
+		setFill(Color.TRANSPARENT);
+		setStroke(Color.BLACK);
+	}
 	
+	@Override
+	protected RegularPolygon clone() throws CloneNotSupportedException {
+		RegularPolygon clonedRegularPolygon = new RegularPolygon(this.getPoints());
+		return clonedRegularPolygon;	
+	}
 	
 	@Override
 	public void draw(MouseEvent event, double startingX, double startingY) {
@@ -33,6 +54,16 @@ public class RegularPolygon extends javafx.scene.shape.Polygon implements Drawab
 		);
 	}
 		
+	}
+	@Override
+	public DoubleProperty getWidthProperty() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public DoubleProperty getHeightProperty() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
