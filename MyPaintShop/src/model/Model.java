@@ -76,6 +76,12 @@ public class Model {
 	public void drawShape(MouseEvent event, Shape shape) {
 		((Drawable) shape).draw(event, startingX, startingY);
 	}
+	
+	public void alternativeDrawShape(MouseEvent event, Shape shape) {
+		((Drawable) shape).alternativeDraw(event, startingX, startingY);
+	}
+	
+	
 
 	public void drawBrush(MouseEvent event, GraphicsContext context, Paint strokeColor) {
 		context.setStroke(strokeColor);

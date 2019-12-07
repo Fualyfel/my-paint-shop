@@ -1,6 +1,7 @@
 package model;
 
 import javafx.beans.property.DoubleProperty;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
@@ -61,6 +62,35 @@ public class Rectangle extends javafx.scene.shape.Rectangle implements Drawable,
 			setY(currentY);
 		}
 		else if (currentX < startingX && currentY < startingY) {
+			setX(currentX);
+			setY(currentY);
+		}
+	}
+	
+	public void alternativeDraw(MouseEvent event, double startingX, double startingY) {
+		double currentX = event.getX();
+		double currentY = event.getY();
+		if (currentX > startingX && currentY > startingY) {
+			setWidth(Math.abs(currentX - startingX));
+			setHeight(getWidth());
+			setX(startingX);
+			setY(startingY);
+		}
+		else if (currentX < startingX && currentY > startingY) {
+			setWidth(Math.abs(currentX - startingX));
+			setHeight(getWidth());
+			setX(currentX);
+			setY(startingY);
+		}
+		else if (currentX > startingX && currentY < startingY) {
+			setHeight(Math.abs(currentY - startingY));
+			setWidth(getHeight());
+			setX(startingX);
+			setY(currentY);
+		}
+		else if (currentX < startingX && currentY < startingY) {
+			setHeight(Math.abs(currentX - startingX));
+			setWidth(getHeight());
 			setX(currentX);
 			setY(currentY);
 		}

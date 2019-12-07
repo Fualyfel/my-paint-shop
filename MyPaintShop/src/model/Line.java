@@ -86,4 +86,12 @@ public class Line extends javafx.scene.shape.Line implements Drawable, Cloneable
 		return this.endYProperty();
 	}
 
+
+
+
+	@Override
+	public void alternativeDraw(MouseEvent event, double startingX, double startingY) {
+		draw(event, startingX, startingY);
+	}
+
 }

@@ -11,6 +11,8 @@ public interface Drawable {
 	
 	public void draw(MouseEvent event, double startingX, double startingY);
 	
+	public void alternativeDraw(MouseEvent event, double startingX, double startingY);
+	
 	public default void EnableDrawing(Shape shape) {
 		shape.addEventHandler(MouseEvent.DRAG_DETECTED, Model.controller.new DragStarter());
 		shape.setOnMouseDragOver(Model.controller.new Drag());

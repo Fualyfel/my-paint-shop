@@ -1,6 +1,5 @@
 package controller;
 
-
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -16,6 +15,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
@@ -59,12 +60,12 @@ public class Controller {
 	public TextField verticalField;
 	@FXML
 	public TextField horizontalField;
-	
+
 	ToggleGroup shapeGroup = new ToggleGroup();
 //	
 //	public StringProperty shapeWidth;
 //	public StringProperty shapeHeight;
-	
+
 	public void setModel(Model model) {
 		this.model = model;
 	}
@@ -98,30 +99,32 @@ public class Controller {
 		brushToggle.setToggleGroup(shapeGroup);
 		borderColor.setValue(Color.BLACK);
 		fillColor.setValue(Color.TRANSPARENT);
-		
-		ChangeListener<String> intFilter = new ChangeListener<String>() {
-		    @Override
-		    public void changed(ObservableValue<? extends String> observable, String oldValue, 
-		        String newValue) {
-		        if (newValue.matches("\\d*")) {
-		            int value = Integer.parseInt(newValue);
-		        } else {
-		            horizontalField.setText(oldValue);
-		            horizontalField.positionCaret(horizontalField.getLength());
-		        }
-		    }
-		};
-		
-		horizontalField.textProperty().addListener(intFilter);
-		verticalField.textProperty().addListener(intFilter);
-		
-		mainPane.getParent().addEventFilter(KeyEvent.KEY_PRESSED, (KeyEvent event) -> {
-			System.out.println("Key pressed");
-			if (event.getCode() == KeyCode.F1) {
-				model.undo(mainPane, canvas);
-				System.out.println("F1 pressed");
+
+		horizontalField.textProperty().addListener((ov, oldValue, newValue) -> {
+			if (newValue.matches("\\d*")) {
+				try {
+					int value = Integer.parseInt(newValue);
+				} catch (NumberFormatException e) {
+					System.out.println("Illegal Dimension");
+				}
+			} else {
+				horizontalField.setText(oldValue);
+				horizontalField.positionCaret(horizontalField.getLength());
 			}
 		});
+		verticalField.textProperty().addListener((ov, oldValue, newValue) -> {
+			if (newValue.matches("\\d*")) {
+				try {
+					int value = Integer.parseInt(newValue);
+				} catch (NumberFormatException e) {
+					System.out.println("Illegal Dimension");
+				}
+			} else {
+				verticalField.setText(oldValue);
+				verticalField.positionCaret(verticalField.getLength());
+			}
+		});
+		mainPane.getParent().setOnKeyPressed(new ShortcutController());
 	}
 
 	/*
@@ -133,7 +136,7 @@ public class Controller {
 			((Node) event.getSource()).startFullDrag();
 			if (shapeGroup.getSelectedToggle() != brushToggle) {
 				if (shapeGroup.getSelectedToggle() == circleToggle) {
-					model.addShapeToPane("ellipse",  borderColor.getValue(), fillColor.getValue(), event, mainPane);
+					model.addShapeToPane("ellipse", borderColor.getValue(), fillColor.getValue(), event, mainPane);
 				} else if (shapeGroup.getSelectedToggle() == rectangleToggle) {
 					model.addShapeToPane("rectangle", borderColor.getValue(), fillColor.getValue(), event, mainPane);
 				} else if (shapeGroup.getSelectedToggle() == triangleToggle) {
@@ -160,13 +163,17 @@ public class Controller {
 	}
 
 	public class Drag implements EventHandler<MouseEvent> {
-		
+
 		@Override
 		public void handle(MouseEvent event) {
 			if (shapeGroup.getSelectedToggle() == null) {
 				System.out.println("No shape selected");
 			} else if (shapeGroup.getSelectedToggle() != brushToggle) {
-				model.drawShape(event, model.getShape());
+				if (event.isShiftDown()) {
+					model.alternativeDrawShape(event, model.getShape());
+				} else {
+					model.drawShape(event, model.getShape());
+				}
 			} else {
 				model.drawBrush(event, canvas.getGraphicsContext2D(), fillColor.getValue());
 			}
@@ -217,6 +224,30 @@ public class Controller {
 				model.deleteShape(model.selectedShape, mainPane);
 			}
 
+		}
+	}
+
+	public class ShortcutController implements EventHandler<KeyEvent> {
+		KeyCombination undoShortcut = new KeyCodeCombination(KeyCode.Z, KeyCombination.CONTROL_DOWN);
+		KeyCombination newFileShortcut = new KeyCodeCombination(KeyCode.N, KeyCombination.CONTROL_DOWN);
+		KeyCombination saveFileShortcut = new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN);
+		KeyCombination copyShapeShortcut = new KeyCodeCombination(KeyCode.C, KeyCombination.CONTROL_DOWN);
+		KeyCombination cutShapeShortcut = new KeyCodeCombination(KeyCode.X, KeyCombination.CONTROL_DOWN);
+		KeyCombination pasteShapeShortcut = new KeyCodeCombination(KeyCode.V, KeyCombination.CONTROL_DOWN);
+		KeyCombination openFileShortcut = new KeyCodeCombination(KeyCode.O, KeyCombination.CONTROL_DOWN);
+
+		@Override
+		public void handle(KeyEvent event) {
+			if (undoShortcut.match(event)) {
+				model.undo(mainPane, canvas);
+			} else if (newFileShortcut.match(event)) {
+				model.saveState(mainPane, canvas);
+				model.resetPaneAndCanvas(mainPane, canvas);
+			} else if (saveFileShortcut.match(event)) {
+				model.save(mainPane);
+			} else if (copyShapeShortcut.match(event)) {
+				model.copyShape(model.selectedShape, mainPane);
+			}
 		}
 	}
 

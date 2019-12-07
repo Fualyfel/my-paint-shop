@@ -91,4 +91,9 @@ public class Triangle extends javafx.scene.shape.Polygon implements Drawable, Cl
 		return height;
 	}
 
+	@Override
+	public void alternativeDraw(MouseEvent event, double startingX, double startingY) {
+		draw(event, startingX, startingY);
+	}
+
 }

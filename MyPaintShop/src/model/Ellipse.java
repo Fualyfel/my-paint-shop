@@ -87,4 +87,14 @@ public class Ellipse extends javafx.scene.shape.Ellipse implements Drawable, Clo
 		return this.radiusYProperty();
 	}
 
+	@Override
+	public void alternativeDraw(MouseEvent event, double startingX, double startingY) {
+		double currentX = event.getX();
+		double currentY = event.getY();
+		setRadiusX(Math.abs(currentX - startingX));
+		setRadiusY(getRadiusX());
+		setCenterX(startingX);
+		setCenterY(startingY);
+	}
+
 }

@@ -65,5 +65,9 @@ public class RegularPolygon extends javafx.scene.shape.Polygon implements Drawab
 		// TODO Auto-generated method stub
 		return null;
 	}
+	@Override
+	public void alternativeDraw(MouseEvent event, double startingX, double startingY) {
+		alternativeDraw(event, startingX, startingY);
+	}
 
 }
