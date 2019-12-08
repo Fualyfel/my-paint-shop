@@ -1,5 +1,6 @@
 package controller;
 
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -22,10 +23,14 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import javafx.scene.shape.Shape;
 import model.Model;
 import model.State;
-
+/**
+ * The controller handles all user interaction, such as clicks, drags, keyboard presses, and calls the
+ * appropriate methods in the model.
+ */
 public class Controller {
 	private Model model;
 	@FXML
@@ -57,22 +62,26 @@ public class Controller {
 	@FXML
 	MenuItem saveFile;
 	@FXML
+	MenuItem quit;
+	@FXML
+	MenuItem undo;
+	@FXML
+	MenuItem cut;
 	public TextField verticalField;
 	@FXML
 	public TextField horizontalField;
-
+	@FXML
+	public ColorPicker selectedBorder;
+	@FXML
+	public ColorPicker selectedFill;
 	ToggleGroup shapeGroup = new ToggleGroup();
-//	
-//	public StringProperty shapeWidth;
-//	public StringProperty shapeHeight;
-
+	
 	public void setModel(Model model) {
 		this.model = model;
 	}
 
-	/*
-	 * initialize() is called whenever the application is launched. ( similar to
-	 * start() )
+	/**
+	 * initialize() is called whenever the controller is initilaized (application starts.)
 	 */
 	@FXML
 	private void initialize() {
@@ -80,6 +89,7 @@ public class Controller {
 		model.setController(this);
 		bindCanvasToPane();
 		clipChildren(mainPane);
+		mainPane.getParent().setOnKeyPressed(new ShortcutController());
 		model.getStates().push(new State(model.getShapes(mainPane), model.getImagefromNode(canvas)));
 		mainPane.addEventHandler(MouseEvent.MOUSE_RELEASED, new StateController());
 		mainPane.addEventHandler(MouseEvent.MOUSE_CLICKED, new Click());
@@ -91,6 +101,8 @@ public class Controller {
 		openFile.setOnAction(new MenuController());
 		newFile.setOnAction(new MenuController());
 		saveFile.setOnAction(new MenuController());
+		quit.setOnAction(new MenuController());
+		undo.setOnAction(new MenuController());
 		verticalField.textProperty();
 		circleToggle.setToggleGroup(shapeGroup);
 		triangleToggle.setToggleGroup(shapeGroup);
@@ -124,11 +136,26 @@ public class Controller {
 				verticalField.positionCaret(verticalField.getLength());
 			}
 		});
-		mainPane.getParent().setOnKeyPressed(new ShortcutController());
+		selectedFill.valueProperty().addListener((ov, oldVal, newVal) -> {
+			try {
+			model.saveState(mainPane, canvas);
+			model.selectedShape.setFill(newVal);
+			} catch (Exception e) {
+				System.out.println("No shape selected: " + e);
+			}
+		});
+		selectedBorder.valueProperty().addListener((ov, oldVal, newVal) -> {
+			try {
+			model.saveState(mainPane, canvas);
+			model.selectedShape.setStroke(newVal);
+			} catch (Exception e) {
+				System.out.println("No shape selected: " + e);
+			}
+		});
 	}
 
-	/*
-	 * starts the dragging process for shape drawing
+	/**
+	 * Handler for shape dragging process.
 	 */
 	public class DragStarter implements EventHandler<MouseEvent> {
 		@Override
@@ -148,8 +175,8 @@ public class Controller {
 		}
 	}
 
-	/*
-	 * Handles user presses
+	/**
+	 * Handle 
 	 */
 	public class BrushDraw implements EventHandler<MouseEvent> {
 		@Override
@@ -199,13 +226,20 @@ public class Controller {
 
 		@Override
 		public void handle(ActionEvent event) {
-			model.saveState(mainPane, canvas);
 			if (event.getSource() == openFile) {
+				model.saveState(mainPane, canvas);
 				model.load(mainPane, canvas);
 			} else if (event.getSource() == newFile) {
+				model.saveState(mainPane, canvas);
 				model.resetPaneAndCanvas(mainPane, canvas);
 			} else if (event.getSource() == saveFile) {
 				model.save(mainPane);
+			} else if (event.getSource() == quit) {
+				model.quit();
+			} else if (event.getSource() == undo) {
+				model.undo(mainPane, canvas);
+			} else if (event.getSource() == cut) {
+				model.cutShape(model.selectedShape, mainPane);
 			}
 		}
 	}

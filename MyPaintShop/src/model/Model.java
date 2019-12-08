@@ -27,6 +27,7 @@ import javafx.scene.paint.Paint;
 import javafx.scene.shape.Shape;
 import javafx.util.StringConverter;
 import javafx.util.converter.NumberStringConverter;
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.StringProperty;
@@ -294,6 +295,11 @@ public class Model {
 //		canvas.setOnMouseDragOver(controller.new Drag());
 //		canvas.setOnMousePressed(controller.new BrushDraw());
 //		controller.bindCanvasToPane();
+	}
+	
+	public void quit() {
+		Platform.exit();
+		System.exit(0);
 	}
 
 	public Shape getShape() {
