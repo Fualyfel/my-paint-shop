@@ -1,8 +1,5 @@
 package controller;
 
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
@@ -23,7 +20,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
 import javafx.scene.shape.Shape;
 import model.Model;
 import model.State;
@@ -138,15 +134,14 @@ public class Controller {
 		});
 		selectedFill.valueProperty().addListener((ov, oldVal, newVal) -> {
 			try {
-			model.saveState(mainPane, canvas);
 			model.selectedShape.setFill(newVal);
 			} catch (Exception e) {
 				System.out.println("No shape selected: " + e);
 			}
 		});
+		
 		selectedBorder.valueProperty().addListener((ov, oldVal, newVal) -> {
 			try {
-			model.saveState(mainPane, canvas);
 			model.selectedShape.setStroke(newVal);
 			} catch (Exception e) {
 				System.out.println("No shape selected: " + e);
@@ -212,7 +207,7 @@ public class Controller {
 		@Override
 		public void handle(MouseEvent event) {
 			System.out.println("Target: " + event.getTarget());
-			if (event.getTarget() instanceof Shape) {
+			if (event.getTarget() instanceof Shape && (shapeGroup.getSelectedToggle() != brushToggle)) {
 				System.out.println("selected");
 				model.selectShape(event);
 			} else {
@@ -223,14 +218,11 @@ public class Controller {
 	}
 
 	public class MenuController implements EventHandler<ActionEvent> {
-
 		@Override
 		public void handle(ActionEvent event) {
 			if (event.getSource() == openFile) {
-				model.saveState(mainPane, canvas);
 				model.load(mainPane, canvas);
 			} else if (event.getSource() == newFile) {
-				model.saveState(mainPane, canvas);
 				model.resetPaneAndCanvas(mainPane, canvas);
 			} else if (event.getSource() == saveFile) {
 				model.save(mainPane);
@@ -247,7 +239,6 @@ public class Controller {
 	public class ButtonController implements EventHandler<ActionEvent> {
 		@Override
 		public void handle(ActionEvent event) {
-			model.saveState(mainPane, canvas);
 			if (event.getSource() == duplicateButton) {
 				try {
 					model.duplicateShape(model.selectedShape, mainPane);
@@ -275,25 +266,30 @@ public class Controller {
 			if (undoShortcut.match(event)) {
 				model.undo(mainPane, canvas);
 			} else if (newFileShortcut.match(event)) {
-				model.saveState(mainPane, canvas);
 				model.resetPaneAndCanvas(mainPane, canvas);
 			} else if (saveFileShortcut.match(event)) {
 				model.save(mainPane);
 			} else if (copyShapeShortcut.match(event)) {
 				model.copyShape(model.selectedShape, mainPane);
+			} else if (cutShapeShortcut.match(event)) {
+				model.cutShape(model.selectedShape, mainPane);
 			}
 		}
 	}
-
+	
 	public class StateController<T extends Event> implements EventHandler<T> {
 
 		@Override
 		public void handle(T event) {
-			if (shapeGroup.getSelectedToggle() != null && !(event.getTarget() instanceof Shape)) {
+			if (shapeGroup.getSelectedToggle() == brushToggle && !(event.getTarget() instanceof Shape)) {
 				model.saveState(mainPane, canvas);
+				System.out.println("from Stroke");
 			}
 		}
 	}
+	
+	
+	
 
 	/*
 	 * method that helps with resizing the canvas

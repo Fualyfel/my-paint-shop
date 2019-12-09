@@ -30,13 +30,14 @@ import javafx.util.converter.NumberStringConverter;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.Property;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.Event;
 import javafx.geometry.Bounds;
 
-/*
+/**
  * The Model handles most of the logic in the application, creating shapes and adding them to the
  * pane. selecting shapes, saving the image, and so on.
  */
@@ -72,6 +73,7 @@ public class Model {
 		System.out.println("Drag Detected: X : " + startingX + " Y: " + startingY);
 		shape = createShape(shapeName, fill, border);
 		pane.getChildren().add(shape);
+		saveState(pane, controller.canvas);
 	}
 
 	public void drawShape(MouseEvent event, Shape shape) {
@@ -111,6 +113,8 @@ public class Model {
 			attachBoundingRectangle((Node) selectedShape);
 			bindPropertyToShape(controller.horizontalField.textProperty(), controller.verticalField.textProperty(),
 					selectedShape);
+			controller.selectedFill.valueProperty().setValue((Color) selectedShape.fillProperty().getValue());
+			controller.selectedBorder.valueProperty().setValue((Color) selectedShape.strokeProperty().getValue());
 		}
 	}
 
@@ -179,25 +183,28 @@ public class Model {
 		deleteShape(shape, pane);
 	}
 
-	public void pasteShape(Shape shape, Pane pane) {
-
+	public void pasteShape(Shape shape, Pane pane) throws Exception {
+		duplicateShape(shape, pane);
 	}
 
 	/*
 	 * deletes the shape by removing it from the pane.
 	 */
 	public void deleteShape(Shape shape, Pane pane) {
+		saveState(pane, controller.canvas);
 		deSelectShape();
 		pane.getChildren().remove(shape);
 	}
 
 	public void deleteAllShapes(ArrayList<Shape> shapes, Pane pane) {
 		for (Shape s : shapes) {
-			deleteShape(s, pane);
+			deSelectShape();
+			pane.getChildren().remove(s);
 		}
 	}
 
 	public void deleteCanvas(Pane pane) {
+		saveState(pane, controller.canvas);
 		for (Node n : pane.getChildren()) {
 			if (n instanceof Canvas) {
 				pane.getChildren().remove(n);
@@ -239,6 +246,7 @@ public class Model {
 	}
 
 	public void duplicateShape(Shape selectedShape, Pane pane) throws Exception {
+		saveState(pane, controller.canvas);
 		final double offset = 40;
 		System.out.println("selected Shape name: " + selectedShape.getClass().getName());
 		if (selectedShape instanceof Ellipse) {
@@ -288,13 +296,14 @@ public class Model {
 	}
 
 	public void resetPaneAndCanvas(Pane mainPane, Canvas canvas) {
+		saveState(mainPane, canvas);
 		deleteAllShapes(getShapes(mainPane), mainPane);
 		GraphicsContext graphicsCon = canvas.getGraphicsContext2D();
 		graphicsCon.clearRect(canvas.getLayoutX(), canvas.getLayoutY(), canvas.getWidth(), canvas.getHeight());
-//		canvas.addEventHandler(MouseEvent.DRAG_DETECTED, controller.new DragStarter());
-//		canvas.setOnMouseDragOver(controller.new Drag());
-//		canvas.setOnMousePressed(controller.new BrushDraw());
-//		controller.bindCanvasToPane();
+		canvas.addEventHandler(MouseEvent.DRAG_DETECTED, controller.new DragStarter());
+		canvas.setOnMouseDragOver(controller.new Drag());
+		canvas.setOnMousePressed(controller.new BrushDraw());
+		controller.bindCanvasToPane();
 	}
 	
 	public void quit() {
