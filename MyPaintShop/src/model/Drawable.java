@@ -42,14 +42,14 @@ public interface Drawable {
 	/**
 	 * returns the widthProperty of each shape.
 	 * each shape has it's own width property
-	 * @return
+	 * @return width property of the shape
 	 */
 	public DoubleProperty getWidthProperty();
 	
 	/**
 	 * returns the heightProperty of each shape.
 	 * each shape has it's own width property
-	 * @return
+	 * @return height property of the shape
 	 */
 	public DoubleProperty getHeightProperty();
 	

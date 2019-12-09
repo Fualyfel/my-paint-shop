@@ -315,7 +315,7 @@ public class Model {
 			BufferedImage bImage = SwingFXUtils.fromFXImage(image, null);
 		    ImageIO.write(bImage, "png", FileSaver.ImageSaver());
 		} catch (Exception e) {
-			e.printStackTrace();
+			System.out.println("Could not save file");
 		}
 	}
 

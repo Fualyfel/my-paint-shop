@@ -6,10 +6,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 
 /**
- * Defines a JavaFX Eclipse that implements the Drawable interface
- * @see Drawable
+ * Defines a JavaFX {@link javafx.scene.shape.Ellipse Ellipse} that implements the {@link Drawable} interface
  * @author Fawaz
- * @see javafx.scene.shape.Ellipse
  */
 public class Ellipse extends javafx.scene.shape.Ellipse implements Drawable, Cloneable {
 
@@ -90,9 +88,8 @@ public class Ellipse extends javafx.scene.shape.Ellipse implements Drawable, Clo
 	}
 	
 	/**
-	 * clones the Ellipse and adds a positive shift (bottom-right) to it's center coordinates. used by duplicate()
+	 * clones the Ellipse and adds a positive shift (bottom-right) to it's center coordinates. used by duplicate
 	 * @param offset the shift 
-	 * @see Model.duplicate
 	 */
 	public Ellipse clone(double offset) {
 		return new Ellipse(this.getCenterX()+offset, this.getCenterY()+offset, this.getRadiusX(), this.getRadiusY(), this.getFill(),

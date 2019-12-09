@@ -302,8 +302,7 @@ public class Controller {
 	}
 	
 	/**
-	 * Handles all events related to state management
-	 * @see State
+	 * Handles all events related to {@link State state} management
 	 * @author Fawaz
 	 * @param <T> the type of the event
 	 */
