@@ -5,6 +5,10 @@ import java.io.File;
 import javafx.stage.FileChooser;
 import javafx.stage.Window;
 
+/**
+ * A utility class that returns the image that the user wants to save
+ * @author Waleed
+ */
 public class FileSaver {
 	public static File ImageSaver() {
 		Window loadingStage = null;

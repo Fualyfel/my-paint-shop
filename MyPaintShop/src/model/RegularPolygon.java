@@ -5,6 +5,11 @@ import javafx.collections.ObservableList;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 
+
+/*
+ * A regular polygon with n sides
+ * to be fully implemented after the project finishes.
+ */
 public class RegularPolygon extends javafx.scene.shape.Polygon implements Drawable, Cloneable {
 
 	
@@ -23,9 +28,6 @@ public class RegularPolygon extends javafx.scene.shape.Polygon implements Drawab
 		EnableDrawing(this);
 	}
 	
-	/**
-	 * @param points
-	 */
 	public RegularPolygon(double... points) {
 		super(points);
 	}
