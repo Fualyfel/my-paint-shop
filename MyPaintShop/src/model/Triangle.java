@@ -9,6 +9,11 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 
+/**
+ * Defines a JavaFX {@link javafx.scene.shape.Polygon Polygon} of 3 points that implements the {@link Drawable}, and Cloneable interfaces
+ * @see Cloneable
+ * @author Fawaz
+ */
 public class Triangle extends javafx.scene.shape.Polygon implements Drawable, Cloneable {
 
 	private DoubleProperty width = new SimpleDoubleProperty();

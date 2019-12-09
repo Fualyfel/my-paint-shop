@@ -29,7 +29,7 @@ public interface Drawable {
 	public void alternativeDraw(MouseEvent event, double startingX, double startingY);
 	
 	/**
-	 * enables drawing, and clicking on the shape themselves.
+	 * enables drawing, and clicking on the shapes.
 	 * @param starti
 	 */
 	public default void EnableDrawing(Shape shape) {

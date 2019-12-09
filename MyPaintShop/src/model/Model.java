@@ -43,17 +43,49 @@ import javafx.geometry.Bounds;
  */
 public class Model {
 
+	/**
+	 * 
+	 * @param startingX the X position of the starting coordinate of the shape drawn (the starting x position of the mouse.)
+	 */
 	double startingX = 0.0;
+	
+	 /** 
+	  * @param startingY the Y position of the starting coordinate of the shape drawn (the starting Y position of the mouse.)
+	 */
 	double startingY = 0.0;
 
+	/**
+	 * the shape that is currently being drawn.
+	 */
 	private Shape shape;
 //	private ArrayList<Shape> selectedShapes = new ArrayList<Shape>();
+	/**
+	 * the selected shape in the pane. selected by the controller's Click event handler
+	 * @see controller.Controller.Click
+	 */
 	public Shape selectedShape;
+	/**
+	 * the copiedShape. instantiated by the method copyShape or cutShape
+	 * @see model.Model.copyShape
+	 * @see model.Model.cutShape
+	 */
 	public Shape copiedShape;
 	public static Controller controller;
+	/**
+	 * @param boundary the boundary of the selected shape. its width and height are set according to the selected shape
+	 * @see attachBoundingRectangle
+	 * @see selectedShape
+	 */
 	final javafx.scene.shape.Rectangle boundary = new javafx.scene.shape.Rectangle();
 	public Stack<State> states = new Stack<State>();
 
+	/**
+	 * Creates a shape based on the controller's input of name, fill, and border
+	 * @param shapeName the name of the created shape
+	 * @param fill the fill color of the created shape
+	 * @param border the border color of the created shape
+	 * @return the shape created
+	 */
 	public Shape createShape(String shapeName, Paint fill, Paint border) {
 		if (shapeName.equalsIgnoreCase("rectangle"))
 			return new Rectangle(fill, border);
@@ -67,6 +99,14 @@ public class Model {
 			return null;
 	}
 
+	/**
+	 * adds the specified shape to the pane with 0 initial dimensions.
+	 * @param shapeName the name of the shape that is added to the pane
+	 * @param border the border of the shape that is added to the pane
+	 * @param fill the fill color of the shape that is added to the pane
+	 * @param event a MouseEvent to indicate where is the starting point of the shape
+	 * @param pane the pane onto which the shape will be added.
+	 */
 	public void addShapeToPane(String shapeName, Paint border, Paint fill, MouseEvent event, Pane pane) {
 		startingX = event.getX();
 		startingY = event.getY();
@@ -76,16 +116,34 @@ public class Model {
 		saveState(pane, controller.canvas);
 	}
 
+	/**
+	 * Draws the shape according to its implementation of the draw method
+	 * @param event a MouseEvent to extract the current location of the mouse.
+	 * @param shape the shape to be drawn.
+	 * @see model.Drawable
+	 */
 	public void drawShape(MouseEvent event, Shape shape) {
 		((Drawable) shape).draw(event, startingX, startingY);
 	}
 	
+	/**
+	 * Draws the shape according to its implementation of the alternativeDraw method
+	 * @param event a MouseEvent to extract the current location of the mouse.
+	 * @param shape the shape to be drawn.
+	 * @see model.Drawable
+	 */
 	public void alternativeDrawShape(MouseEvent event, Shape shape) {
 		((Drawable) shape).alternativeDraw(event, startingX, startingY);
 	}
 	
-	
-
+	/**
+	 * Draws on the canvas on the place where the MouseEvent was triggered
+	 * @param event the MouseEvent which occurred
+	 * @param context the GraphicContext of the canvas
+	 * @param strokeColor the brush color that will be used.
+	 * @see MouseEvent
+	 * @see GraphicsContext
+	 */
 	public void drawBrush(MouseEvent event, GraphicsContext context, Paint strokeColor) {
 		context.setStroke(strokeColor);
 		if (event.getEventType() == MouseEvent.MOUSE_PRESSED) {
@@ -101,11 +159,18 @@ public class Model {
 		}
 	}
 
-	/*
-	 * selects the shape by marking it with a border
+	/**
+	 * selects the shape and attach a border to it.
 	 */
 	public void selectShape(Event event) {
 		if (event.getSource() instanceof Shape) {
+			/*
+			 * The selection process
+			 * 1. Unbind the TextFields properties from the previous shape
+			 * 2. Update the selectedShape
+			 * 3. attach the bound to the shape.
+			 * 4. set the color picker's value to the selected shape's color.
+			 */
 			unbindPropertyToShape(controller.horizontalField.textProperty(), controller.verticalField.textProperty(),
 					selectedShape);
 			selectedShape = (Shape) event.getSource();
@@ -118,6 +183,13 @@ public class Model {
 		}
 	}
 
+	/**
+	 * Binds the shape width and height properties to the TextField's StringProperty.
+	 * Enables real-time viewing and editing of the shape's properties
+	 * @param width the StringProperty of the width TextField
+	 * @param height the StringProperty of the height TextField
+	 * @param shape the shape to be binded with the TextField's properties
+	 */
 	public void bindPropertyToShape(StringProperty width, StringProperty height, Shape shape) {
 		DoubleProperty shapeWidthProperty = ((Drawable) shape).getWidthProperty();
 		DoubleProperty shapeHeightProperty = ((Drawable) shape).getHeightProperty();
@@ -132,6 +204,12 @@ public class Model {
 		});
 	}
 
+	/**
+	 * Unbinds the shape width and height properties from the TextField's StringProperty
+	 * @param width the StringProperty of the width TextField
+	 * @param height the StringProperty of the height TextField
+	 * @param shape the shape to be unbinded from the TextField's properties
+	 */
 	private void unbindPropertyToShape(StringProperty width, StringProperty height, Shape shape) {
 		try {
 			DoubleProperty shapeWidthProperty = ((Drawable) shape).getWidthProperty();
@@ -143,6 +221,9 @@ public class Model {
 		}
 	}
 
+	/**
+	 * deselects the current shape selected
+	 */
 	public void deSelectShape() {
 		unbindPropertyToShape(controller.horizontalField.textProperty(), controller.verticalField.textProperty(),
 				selectedShape);
@@ -150,6 +231,11 @@ public class Model {
 		controller.mainPane.getChildren().remove(boundary);
 	}
 
+	/**
+	 * Attaches a Bounds node to the selected shape
+	 * @param node the node to be bounded (defaultValue: selectedShape)
+	 * @see Bounds
+	 */
 	public void attachBoundingRectangle(Node node) {
 		Bounds bounds = node.getBoundsInParent();
 
@@ -166,6 +252,11 @@ public class Model {
 		controller.mainPane.getChildren().add(boundary);
 	}
 
+	/**
+	 * Copies the shape passed to this method. The copied shape is saved in the model
+	 * @param shape the shape to be copied
+	 * @param pane the pane where the shape is located
+	 */
 	public void copyShape(Shape shape, Pane pane) {
 		if (shape instanceof Ellipse) {
 			copiedShape = ((Ellipse) shape).clone(20);
@@ -178,16 +269,24 @@ public class Model {
 		}
 	}
 
+	/**
+	 * Copies and deletes the shape passed to this method. The copied shape is saved in the model	 
+	 * @param shape the shape to be copied and deleted
+	 * @param pane the pane wher ethe shape is located
+	 */
 	public void cutShape(Shape shape, Pane pane) {
 		copyShape(shape, pane);
 		deleteShape(shape, pane);
 	}
 
+	/** A wrapper method for the duplicateShape method. This method is solely made for consistency with the controller naming scheme
+	 * @see Model.duplicateShape
+	 */
 	public void pasteShape(Shape shape, Pane pane) throws Exception {
 		duplicateShape(shape, pane);
 	}
 
-	/*
+	/**
 	 * deletes the shape by removing it from the pane.
 	 */
 	public void deleteShape(Shape shape, Pane pane) {
@@ -196,24 +295,19 @@ public class Model {
 		pane.getChildren().remove(shape);
 	}
 
+	/**
+	 * deletes all the shapes in the pane.
+	 */
 	public void deleteAllShapes(ArrayList<Shape> shapes, Pane pane) {
 		for (Shape s : shapes) {
 			deSelectShape();
 			pane.getChildren().remove(s);
 		}
 	}
-
-	public void deleteCanvas(Pane pane) {
-		saveState(pane, controller.canvas);
-		for (Node n : pane.getChildren()) {
-			if (n instanceof Canvas) {
-				pane.getChildren().remove(n);
-			}
-		}
-	}
-
-	/*
-	 * saves the pane and canvas as an image
+	
+	/**
+	 * saves all of the pane's contents as an image. This includes the canvas and all of the shapes
+	 * @param pane the pane to be saved
 	 */
 	public void save(Pane pane) {
 		try {
@@ -225,7 +319,7 @@ public class Model {
 		}
 	}
 
-	/*
+	/**
 	 * loads an image into the canvas
 	 */
 	public void load(Pane pane, Canvas canvas) {
@@ -245,6 +339,12 @@ public class Model {
 		}
 	}
 
+	/**
+	 * Adds an exact copy of a shape to the pane at a location relative to the shape
+	 * @param selectedShape the shape to be duplicated
+	 * @param pane the pane where the shape is located
+	 * @throws Exception
+	 */
 	public void duplicateShape(Shape selectedShape, Pane pane) throws Exception {
 		saveState(pane, controller.canvas);
 		final double offset = 40;
@@ -267,6 +367,12 @@ public class Model {
 
 	}
 
+	/**
+	 * loads the previous State object. and adds its shapes to the pane after clearing it, and prints its image to the canvas
+	 * @param pane the pane to be Undoed
+	 * @param canvas the canvas to be cleared and redrawn
+	 * @see State
+	 */
 	public void undo(Pane pane, Canvas canvas) {
 		try {
 			if (states.size() > 1)
@@ -286,6 +392,13 @@ public class Model {
 		}
 	}
 
+	/**
+	 * creates a new State object from the current pane and canvas, and pushes it to the state stack.
+	 * @param pane the pane which will get its objects saved onto State
+	 * @param canvas the canvas which will get its image saved onto State
+	 * @see State
+	 * @see Model.undo
+	 */
 	public void saveState(Pane pane, Canvas canvas) {
 		WritableImage image = getImagefromNode(canvas);
 		ArrayList<Shape> shapes = new ArrayList<Shape>();
@@ -295,6 +408,11 @@ public class Model {
 		System.out.println("state is saved.");
 	}
 
+	/**
+	 * deletes all the shapes from the pane and clears the canvas
+	 * @param mainPane
+	 * @param canvas
+	 */
 	public void resetPaneAndCanvas(Pane mainPane, Canvas canvas) {
 		saveState(mainPane, canvas);
 		deleteAllShapes(getShapes(mainPane), mainPane);
@@ -336,6 +454,12 @@ public class Model {
 		return shapes;
 	}
 
+	/**
+	 * returns an image from a node by taking a snapshot of it
+	 * @param node
+	 * @return image snapshot of the node
+	 * @see javafx.scene.Node.snapshot
+	 */
 	public WritableImage getImagefromNode(Node node) {
 		SnapshotParameters params = new SnapshotParameters();
 		params.setFill(Color.TRANSPARENT);

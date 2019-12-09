@@ -33,7 +33,6 @@
             <MenuItem fx:id="openFile" mnemonicParsing="false" text="Open" />
             <SeparatorMenuItem mnemonicParsing="false" />
             <MenuItem fx:id="saveFile" mnemonicParsing="false" text="Save" />
-            <MenuItem mnemonicParsing="false" text="Save As…" />
             <SeparatorMenuItem mnemonicParsing="false" />
             <MenuItem fx:id="quit" mnemonicParsing="false" text="Quit" />
           </items>

@@ -6,10 +6,17 @@ import javafx.stage.FileChooser;
 import javafx.stage.Window;
 
 /**
- * A utility class that returns the image that the user wants to save
+ * A utility class that displays a file selection window
  * @author Waleed
  */
 public class FileSaver {
+	
+	
+	/**
+	 * displays a file selection window, and saves the file in the specified path.
+	 * @author Waleed
+	 * @return File selected
+	 */
 	public static File ImageSaver() {
 		Window loadingStage = null;
 		FileChooser savingFileChooser = new FileChooser();

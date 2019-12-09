@@ -11,11 +11,16 @@ import javafx.stage.Window;
 
  
 /**
- * A utility class that returns the image that the user wants to open
+ * A utility class that displays a file selection window
  * @author Waleed
  */
 public class FileLoader {
     
+	/**
+	 * displays a file selection window. and returns the file selected by the user.
+	 * @author Waleed
+	 * @return File selected
+	 */
     public static File ImageLoader() {
         
         Window loadingStage = null;

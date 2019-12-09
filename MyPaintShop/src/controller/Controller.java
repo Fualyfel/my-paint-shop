@@ -24,7 +24,7 @@ import javafx.scene.shape.Shape;
 import model.Model;
 import model.State;
 /**
- * The controller handles all user interaction, such as clicks, drags, keyboard presses, and calls the
+ * Handles all user interaction, such as clicks, drags, keyboard presses, and calls the
  * appropriate methods in the model.
  */
 public class Controller {
@@ -77,7 +77,7 @@ public class Controller {
 	}
 
 	/**
-	 * initialize() is called whenever the controller is initilaized (application starts.)
+	 * initialize() is called whenever the controller is initialized (application starts.)
 	 */
 	@FXML
 	private void initialize() {
@@ -134,6 +134,7 @@ public class Controller {
 		});
 		selectedFill.valueProperty().addListener((ov, oldVal, newVal) -> {
 			try {
+			model.saveState(mainPane, canvas);
 			model.selectedShape.setFill(newVal);
 			} catch (Exception e) {
 				System.out.println("No shape selected: " + e);
@@ -142,6 +143,7 @@ public class Controller {
 		
 		selectedBorder.valueProperty().addListener((ov, oldVal, newVal) -> {
 			try {
+			model.saveState(mainPane, canvas);
 			model.selectedShape.setStroke(newVal);
 			} catch (Exception e) {
 				System.out.println("No shape selected: " + e);
@@ -150,7 +152,7 @@ public class Controller {
 	}
 
 	/**
-	 * Handler for shape dragging process.
+	 * Initial handler for shape drawing process.
 	 */
 	public class DragStarter implements EventHandler<MouseEvent> {
 		@Override
@@ -171,7 +173,7 @@ public class Controller {
 	}
 
 	/**
-	 * Handle 
+	 * Handles brush drawing
 	 */
 	public class BrushDraw implements EventHandler<MouseEvent> {
 		@Override
@@ -184,6 +186,11 @@ public class Controller {
 
 	}
 
+	/**
+	 * Handles the dragging event for both shape and brush mouse drags.
+	 * @author Fawaz
+	 *
+	 */
 	public class Drag implements EventHandler<MouseEvent> {
 
 		@Override
@@ -202,7 +209,10 @@ public class Controller {
 		}
 
 	}
-
+	/**
+	 * Handles shape selection process
+	 * @author Fawaz
+	 */
 	public class Click implements EventHandler<MouseEvent> {
 		@Override
 		public void handle(MouseEvent event) {
@@ -217,6 +227,11 @@ public class Controller {
 		}
 	}
 
+	/**
+	 * Handles all the menu items' ActionEvents.
+	 * @author Fawaz
+	 * @see ActionEvent
+	 */
 	public class MenuController implements EventHandler<ActionEvent> {
 		@Override
 		public void handle(ActionEvent event) {
@@ -236,6 +251,11 @@ public class Controller {
 		}
 	}
 
+	/**
+	 * Handles all the buttons' ActionEvents.
+	 * @author Fawaz
+	 * @see ActionEvent
+	 */
 	public class ButtonController implements EventHandler<ActionEvent> {
 		@Override
 		public void handle(ActionEvent event) {
@@ -252,6 +272,10 @@ public class Controller {
 		}
 	}
 
+	/**
+	 * Handles all possible keyboard shortcuts
+	 * @author Fawaz
+	 */
 	public class ShortcutController implements EventHandler<KeyEvent> {
 		KeyCombination undoShortcut = new KeyCodeCombination(KeyCode.Z, KeyCombination.CONTROL_DOWN);
 		KeyCombination newFileShortcut = new KeyCodeCombination(KeyCode.N, KeyCombination.CONTROL_DOWN);
@@ -277,6 +301,12 @@ public class Controller {
 		}
 	}
 	
+	/**
+	 * Handles all events related to state management
+	 * @see State
+	 * @author Fawaz
+	 * @param <T> the type of the event
+	 */
 	public class StateController<T extends Event> implements EventHandler<T> {
 
 		@Override
@@ -291,7 +321,7 @@ public class Controller {
 	
 	
 
-	/*
+	/**
 	 * method that helps with resizing the canvas
 	 */
 	public void bindCanvasToPane() {
@@ -299,8 +329,8 @@ public class Controller {
 		canvas.heightProperty().bind(mainPane.heightProperty());
 	}
 
-	/*
-	 * handles clipping (when the shape is out of the pane.)
+	/**
+	 * fixes clipping (when the shape is out of the pane.)
 	 */
 	public void clipChildren(Region pane) {
 
