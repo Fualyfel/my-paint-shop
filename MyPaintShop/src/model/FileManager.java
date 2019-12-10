@@ -14,7 +14,7 @@ import javafx.stage.Window;
  * A utility class that displays a file selection window
  * @author Waleed
  */
-public class FileLoader {
+public class FileManager {
     
 	/**
 	 * displays a file selection window. and returns the file selected by the user.
@@ -31,6 +31,15 @@ public class FileLoader {
         
         return newImage;
     }
+    
+	public static File fileSaver() {
+		Window loadingStage = null;
+		FileChooser savingFileChooser = new FileChooser();
+		savingFileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Picture (*.png)", "*.png"),
+													   new FileChooser.ExtensionFilter("MyPaintShop Object (*.mps)", "*.mps"));
+		File newFile = savingFileChooser.showSaveDialog(loadingStage);
+		return newFile;
+	}
 
  
 

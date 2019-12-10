@@ -328,7 +328,7 @@ public class Model {
 	}
 
 	public void saveFile() {
-		File file = FileSaver.fileSaver();
+		File file = FileManager.fileSaver();
 		String ext = getFileExtension(file);
 		if (ext.equals("png")) {
 			saveAsImage(controller.mainPane, file);
@@ -389,7 +389,7 @@ public class Model {
 		resetPaneAndCanvas(pane, canvas);
 		try {
 			myBI = new BackgroundImage(
-					new Image(new FileInputStream(FileLoader.ImageLoader()), canvas.getWidth(), canvas.getHeight(),
+					new Image(new FileInputStream(FileManager.ImageLoader()), canvas.getWidth(), canvas.getHeight(),
 							false, true),
 					BackgroundRepeat.REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
 					BackgroundSize.DEFAULT);
