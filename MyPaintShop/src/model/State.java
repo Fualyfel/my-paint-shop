@@ -1,7 +1,13 @@
 package model;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 
+import javax.imageio.ImageIO;
+
+import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
 import javafx.scene.shape.Shape;
 /**
@@ -17,9 +23,9 @@ import javafx.scene.shape.Shape;
  * 
  * @author Fawaz
  */
-public class State {
-	private final ArrayList<Shape> shapeList;
-	private final Image image;
+public class State /* implements Serializable */ {
+	private ArrayList<Shape> shapeList;
+	private transient Image image;
 
 	public State(ArrayList<Shape> shapeList, Image image) {
 		this.shapeList = shapeList;
@@ -33,5 +39,20 @@ public class State {
 	public Image getImage() {
 		return image;
 	}
+
+	/*
+	 * Serialization to be implemented at a later date.
+	 */
+//    private void readObject(ObjectInputStream s) throws IOException, ClassNotFoundException {
+//        s.defaultReadObject();
+//        shapeList = (ArrayList<Shape>) s.readObject();
+//        image = SwingFXUtils.toFXImage(ImageIO.read(s), null);
+//    }
+//
+//    private void writeObject(ObjectOutputStream s) throws IOException {
+//        s.defaultWriteObject();
+//        s.writeObject(shapeList);
+//        ImageIO.write(SwingFXUtils.fromFXImage(image, null), "png", s);
+//    }
 
 }

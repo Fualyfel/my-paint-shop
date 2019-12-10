@@ -23,6 +23,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Shape;
 import model.Model;
 import model.State;
+import view.aboutWindow;
 /**
  * Handles all user interaction, such as clicks, drags, keyboard presses, and calls the
  * appropriate methods in the model.
@@ -63,6 +64,14 @@ public class Controller {
 	MenuItem undo;
 	@FXML
 	MenuItem cut;
+	@FXML
+	MenuItem copy;
+	@FXML
+	MenuItem paste;
+	@FXML
+	MenuItem delete;
+	@FXML
+	MenuItem about;
 	public TextField verticalField;
 	@FXML
 	public TextField horizontalField;
@@ -99,6 +108,11 @@ public class Controller {
 		saveFile.setOnAction(new MenuController());
 		quit.setOnAction(new MenuController());
 		undo.setOnAction(new MenuController());
+		cut.setOnAction(new MenuController());
+		copy.setOnAction(new MenuController());
+		paste.setOnAction(new MenuController());
+		delete.setOnAction(new MenuController());
+		about.setOnAction(new MenuController());
 		verticalField.textProperty();
 		circleToggle.setToggleGroup(shapeGroup);
 		triangleToggle.setToggleGroup(shapeGroup);
@@ -236,17 +250,26 @@ public class Controller {
 		@Override
 		public void handle(ActionEvent event) {
 			if (event.getSource() == openFile) {
-				model.load(mainPane, canvas);
+				model.loadImage(mainPane, canvas);
 			} else if (event.getSource() == newFile) {
 				model.resetPaneAndCanvas(mainPane, canvas);
 			} else if (event.getSource() == saveFile) {
-				model.save(mainPane);
+				model.saveFile();
 			} else if (event.getSource() == quit) {
 				model.quit();
 			} else if (event.getSource() == undo) {
 				model.undo(mainPane, canvas);
 			} else if (event.getSource() == cut) {
 				model.cutShape(model.selectedShape, mainPane);
+			} else if (event.getSource() == copy) {
+				model.copyShape(model.selectedShape, mainPane);
+			} else if (event.getSource() == paste) {
+				model.pasteShape(model.copiedShape, mainPane);
+			} else if (event.getSource() == delete) {
+				model.deleteShape(model.selectedShape, mainPane);
+			} else if (event.getSource() == about) {
+				aboutWindow window = new aboutWindow();
+				window.show();
 			}
 		}
 	}
@@ -292,11 +315,18 @@ public class Controller {
 			} else if (newFileShortcut.match(event)) {
 				model.resetPaneAndCanvas(mainPane, canvas);
 			} else if (saveFileShortcut.match(event)) {
-				model.save(mainPane);
+				model.saveFile();
 			} else if (copyShapeShortcut.match(event)) {
 				model.copyShape(model.selectedShape, mainPane);
 			} else if (cutShapeShortcut.match(event)) {
 				model.cutShape(model.selectedShape, mainPane);
+			} else if (pasteShapeShortcut.match(event)) {
+				try {
+					model.pasteShape(model.copiedShape, mainPane);
+				} catch (Exception e) {
+					System.out.println("No shape selected");
+					e.printStackTrace();
+				}
 			}
 		}
 	}

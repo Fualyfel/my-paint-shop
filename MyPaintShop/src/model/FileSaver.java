@@ -17,13 +17,13 @@ public class FileSaver {
 	 * @author Waleed
 	 * @return File selected
 	 */
-	public static File ImageSaver() {
+	public static File fileSaver() {
 		Window loadingStage = null;
 		FileChooser savingFileChooser = new FileChooser();
-		savingFileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Picture (*.png)", "*.png"));
-		File newImage = savingFileChooser.showSaveDialog(loadingStage);
-
-		return newImage;
+		savingFileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Picture (*.png)", "*.png"),
+													   new FileChooser.ExtensionFilter("MyPaintShop Object (*.mps)", "*.mps"));
+		File newFile = savingFileChooser.showSaveDialog(loadingStage);
+		return newFile;
 	}
 
 }

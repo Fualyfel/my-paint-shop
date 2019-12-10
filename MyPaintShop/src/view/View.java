@@ -7,7 +7,11 @@ import javafx.scene.Scene;
 
 import javafx.stage.Stage;
 
-
+/**
+ * The starting point of the application.
+ * @author Fawaz
+ *
+ */
 public class View extends Application {
 
 	public static void main(String[] args) {

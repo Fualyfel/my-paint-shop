@@ -1,13 +1,15 @@
 package model;
 
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Stack;
 
 import javax.imageio.ImageIO;
-
 import controller.Controller;
 import javafx.scene.Node;
 import javafx.scene.SnapshotParameters;
@@ -30,49 +32,53 @@ import javafx.util.converter.NumberStringConverter;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.Property;
 import javafx.beans.property.StringProperty;
-import javafx.beans.value.ObservableValue;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.Event;
 import javafx.geometry.Bounds;
 
 /**
- * The Model handles most of the logic in the application, creating shapes and adding them to the
- * pane. selecting shapes, saving the image, and so on.
+ * The Model handles most of the logic in the application, creating shapes and
+ * adding them to the pane. selecting shapes, saving the image, and so on.
  */
 public class Model {
 
 	/**
 	 * 
-	 * @param startingX the X position of the starting coordinate of the shape drawn (the starting x position of the mouse.)
+	 * startingX the X position of the starting coordinate of the shape drawn
+	 *                  (the starting x position of the mouse.)
 	 */
 	double startingX = 0.0;
-	
-	 /** 
-	  * @param startingY the Y position of the starting coordinate of the shape drawn (the starting Y position of the mouse.)
+
+	/**
+	 * startingY the Y position of the starting coordinate of the shape drawn
+	 *                  (the starting Y position of the mouse.)
 	 */
 	double startingY = 0.0;
 
-	/**
+	/*
 	 * the shape that is currently being drawn.
 	 */
 	private Shape shape;
 //	private ArrayList<Shape> selectedShapes = new ArrayList<Shape>();
 	/**
-	 * the selected shape in the pane. selected by the controller's Click event handler
+	 * the selected shape in the pane. selected by the controller's Click event
+	 * handler
+	 * 
 	 * @see controller.Controller.Click
 	 */
 	public Shape selectedShape;
 	/**
 	 * the copiedShape. instantiated by the method copyShape or cutShape
+	 * 
 	 * @see model.Model.copyShape
 	 * @see model.Model.cutShape
 	 */
 	public Shape copiedShape;
 	public static Controller controller;
 	/**
-	 * @param boundary the boundary of the selected shape. its width and height are set according to the selected shape
+	 * the boundary of the selected shape. its width and height are
+	 *                 set according to the selected shape
 	 * @see attachBoundingRectangle
 	 * @see selectedShape
 	 */
@@ -81,9 +87,10 @@ public class Model {
 
 	/**
 	 * Creates a shape based on the controller's input of name, fill, and border
+	 * 
 	 * @param shapeName the name of the created shape
-	 * @param fill the fill color of the created shape
-	 * @param border the border color of the created shape
+	 * @param fill      the fill color of the created shape
+	 * @param border    the border color of the created shape
 	 * @return the shape created
 	 */
 	public Shape createShape(String shapeName, Paint fill, Paint border) {
@@ -101,11 +108,13 @@ public class Model {
 
 	/**
 	 * adds the specified shape to the pane with 0 initial dimensions.
+	 * 
 	 * @param shapeName the name of the shape that is added to the pane
-	 * @param border the border of the shape that is added to the pane
-	 * @param fill the fill color of the shape that is added to the pane
-	 * @param event a MouseEvent to indicate where is the starting point of the shape
-	 * @param pane the pane onto which the shape will be added.
+	 * @param border    the border of the shape that is added to the pane
+	 * @param fill      the fill color of the shape that is added to the pane
+	 * @param event     a MouseEvent to indicate where is the starting point of the
+	 *                  shape
+	 * @param pane      the pane onto which the shape will be added.
 	 */
 	public void addShapeToPane(String shapeName, Paint border, Paint fill, MouseEvent event, Pane pane) {
 		startingX = event.getX();
@@ -118,6 +127,7 @@ public class Model {
 
 	/**
 	 * Draws the shape according to its implementation of the draw method
+	 * 
 	 * @param event a MouseEvent to extract the current location of the mouse.
 	 * @param shape the shape to be drawn.
 	 * @see model.Drawable
@@ -125,9 +135,10 @@ public class Model {
 	public void drawShape(MouseEvent event, Shape shape) {
 		((Drawable) shape).draw(event, startingX, startingY);
 	}
-	
+
 	/**
 	 * Draws the shape according to its implementation of the alternativeDraw method
+	 * 
 	 * @param event a MouseEvent to extract the current location of the mouse.
 	 * @param shape the shape to be drawn.
 	 * @see model.Drawable
@@ -135,11 +146,12 @@ public class Model {
 	public void alternativeDrawShape(MouseEvent event, Shape shape) {
 		((Drawable) shape).alternativeDraw(event, startingX, startingY);
 	}
-	
+
 	/**
 	 * Draws on the canvas on the place where the MouseEvent was triggered
-	 * @param event the MouseEvent which occurred
-	 * @param context the GraphicContext of the canvas
+	 * 
+	 * @param event       the MouseEvent which occurred
+	 * @param context     the GraphicContext of the canvas
 	 * @param strokeColor the brush color that will be used.
 	 * @see MouseEvent
 	 * @see GraphicsContext
@@ -165,11 +177,9 @@ public class Model {
 	public void selectShape(Event event) {
 		if (event.getSource() instanceof Shape) {
 			/*
-			 * The selection process
-			 * 1. Unbind the TextFields properties from the previous shape
-			 * 2. Update the selectedShape
-			 * 3. attach the bound to the shape.
-			 * 4. set the color picker's value to the selected shape's color.
+			 * The selection process 1. Unbind the TextFields properties from the previous
+			 * shape 2. Update the selectedShape 3. attach the bound to the shape. 4. set
+			 * the color picker's value to the selected shape's color.
 			 */
 			unbindPropertyToShape(controller.horizontalField.textProperty(), controller.verticalField.textProperty(),
 					selectedShape);
@@ -184,11 +194,13 @@ public class Model {
 	}
 
 	/**
-	 * Binds the shape width and height properties to the TextField's StringProperty.
-	 * Enables real-time viewing and editing of the shape's properties
-	 * @param width the StringProperty of the width TextField
+	 * Binds the shape width and height properties to the TextField's
+	 * StringProperty. Enables real-time viewing and editing of the shape's
+	 * properties
+	 * 
+	 * @param width  the StringProperty of the width TextField
 	 * @param height the StringProperty of the height TextField
-	 * @param shape the shape to be binded with the TextField's properties
+	 * @param shape  the shape to be binded with the TextField's properties
 	 */
 	public void bindPropertyToShape(StringProperty width, StringProperty height, Shape shape) {
 		DoubleProperty shapeWidthProperty = ((Drawable) shape).getWidthProperty();
@@ -205,10 +217,12 @@ public class Model {
 	}
 
 	/**
-	 * Unbinds the shape width and height properties from the TextField's StringProperty
-	 * @param width the StringProperty of the width TextField
+	 * Unbinds the shape width and height properties from the TextField's
+	 * StringProperty
+	 * 
+	 * @param width  the StringProperty of the width TextField
 	 * @param height the StringProperty of the height TextField
-	 * @param shape the shape to be unbinded from the TextField's properties
+	 * @param shape  the shape to be unbinded from the TextField's properties
 	 */
 	private void unbindPropertyToShape(StringProperty width, StringProperty height, Shape shape) {
 		try {
@@ -233,6 +247,7 @@ public class Model {
 
 	/**
 	 * Attaches a Bounds node to the selected shape
+	 * 
 	 * @param node the node to be bounded (defaultValue: selectedShape)
 	 * @see Bounds
 	 */
@@ -253,9 +268,11 @@ public class Model {
 	}
 
 	/**
-	 * Copies the shape passed to this method. The copied shape is saved in the model
+	 * Copies the shape passed to this method. The copied shape is saved in the
+	 * model
+	 * 
 	 * @param shape the shape to be copied
-	 * @param pane the pane where the shape is located
+	 * @param pane  the pane where the shape is located
 	 */
 	public void copyShape(Shape shape, Pane pane) {
 		if (shape instanceof Ellipse) {
@@ -270,19 +287,24 @@ public class Model {
 	}
 
 	/**
-	 * Copies and deletes the shape passed to this method. The copied shape is saved in the model	 
+	 * Copies and deletes the shape passed to this method. The copied shape is saved
+	 * in the model
+	 * 
 	 * @param shape the shape to be copied and deleted
-	 * @param pane the pane wher ethe shape is located
+	 * @param pane  the pane wher ethe shape is located
 	 */
 	public void cutShape(Shape shape, Pane pane) {
 		copyShape(shape, pane);
 		deleteShape(shape, pane);
 	}
 
-	/** A wrapper method for the duplicateShape method. This method is solely made for consistency with the controller naming scheme
+	/**
+	 * A wrapper method for the duplicateShape method. This method is solely made
+	 * for consistency with the controller naming scheme
+	 * 
 	 * @see Model.duplicateShape
 	 */
-	public void pasteShape(Shape shape, Pane pane) throws Exception {
+	public void pasteShape(Shape shape, Pane pane) {
 		duplicateShape(shape, pane);
 	}
 
@@ -304,25 +326,65 @@ public class Model {
 			pane.getChildren().remove(s);
 		}
 	}
-	
+
+	public void saveFile() {
+		File file = FileSaver.fileSaver();
+		String ext = getFileExtension(file);
+		if (ext.equals("png")) {
+			saveAsImage(controller.mainPane, file);
+		} else if (ext.equals("mps")) {
+			saveAsObject(file);
+		} else {
+			System.out.println("No extenstion provided.");
+		}
+	}
+
+	private static String getFileExtension(File file) {
+		String fileName = file.getName();
+		if (fileName.lastIndexOf(".") != -1 && fileName.lastIndexOf(".") != 0)
+			return fileName.substring(fileName.lastIndexOf(".") + 1);
+		else
+			return "";
+	}
+
 	/**
-	 * saves all of the pane's contents as an image. This includes the canvas and all of the shapes
+	 * saves all of the pane's contents as an image. This includes the canvas and
+	 * all of the shapes
+	 * 
 	 * @param pane the pane to be saved
 	 */
-	public void save(Pane pane) {
+	public void saveAsImage(Pane pane, File file) {
 		try {
 			WritableImage image = getImagefromNode(pane);
 			BufferedImage bImage = SwingFXUtils.fromFXImage(image, null);
-		    ImageIO.write(bImage, "png", FileSaver.ImageSaver());
+			ImageIO.write(bImage, "png", file);
 		} catch (Exception e) {
 			System.out.println("Could not save file");
 		}
 	}
 
 	/**
+	 * Saves the file as a serialized MPS object. Currently not working.
+	 * @param file the file to be saved
+	 */
+	public void saveAsObject(File file) {
+
+		try {
+			State currentState = states.peek();
+			FileOutputStream fileStream = new FileOutputStream(file);
+			ObjectOutputStream objStream = new ObjectOutputStream(fileStream);
+			objStream.writeObject(currentState);
+			objStream.close();
+		} catch (Exception e) {
+			System.out.println("Could not save file");
+			e.printStackTrace();
+		}
+	}
+
+	/**
 	 * loads an image into the canvas
 	 */
-	public void load(Pane pane, Canvas canvas) {
+	public void loadImage(Pane pane, Canvas canvas) {
 		BackgroundImage myBI;
 		resetPaneAndCanvas(pane, canvas);
 		try {
@@ -341,11 +403,12 @@ public class Model {
 
 	/**
 	 * Adds an exact copy of a shape to the pane at a location relative to the shape
+	 * 
 	 * @param selectedShape the shape to be duplicated
-	 * @param pane the pane where the shape is located
+	 * @param pane          the pane where the shape is located
 	 * @throws Exception
 	 */
-	public void duplicateShape(Shape selectedShape, Pane pane) throws Exception {
+	public void duplicateShape(Shape selectedShape, Pane pane) {
 		saveState(pane, controller.canvas);
 		final double offset = 40;
 		System.out.println("selected Shape name: " + selectedShape.getClass().getName());
@@ -368,8 +431,10 @@ public class Model {
 	}
 
 	/**
-	 * loads the previous State object. and adds its shapes to the pane after clearing it, and prints its image to the canvas
-	 * @param pane the pane to be Undoed
+	 * loads the previous State object. and adds its shapes to the pane after
+	 * clearing it, and prints its image to the canvas
+	 * 
+	 * @param pane   the pane to be Undoed
 	 * @param canvas the canvas to be cleared and redrawn
 	 * @see State
 	 */
@@ -393,8 +458,10 @@ public class Model {
 	}
 
 	/**
-	 * creates a new State object from the current pane and canvas, and pushes it to the state stack.
-	 * @param pane the pane which will get its objects saved onto State
+	 * creates a new State object from the current pane and canvas, and pushes it to
+	 * the state stack.
+	 * 
+	 * @param pane   the pane which will get its objects saved onto State
 	 * @param canvas the canvas which will get its image saved onto State
 	 * @see State
 	 * @see Model.undo
@@ -410,6 +477,7 @@ public class Model {
 
 	/**
 	 * deletes all the shapes from the pane and clears the canvas
+	 * 
 	 * @param mainPane
 	 * @param canvas
 	 */
@@ -423,7 +491,7 @@ public class Model {
 		canvas.setOnMousePressed(controller.new BrushDraw());
 		controller.bindCanvasToPane();
 	}
-	
+
 	public void quit() {
 		Platform.exit();
 		System.exit(0);
@@ -456,6 +524,7 @@ public class Model {
 
 	/**
 	 * returns an image from a node by taking a snapshot of it
+	 * 
 	 * @param node
 	 * @return image snapshot of the node
 	 * @see javafx.scene.Node.snapshot
