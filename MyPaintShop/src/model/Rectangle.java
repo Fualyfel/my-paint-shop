@@ -5,58 +5,65 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
+import javafx.scene.transform.Rotate;
 
 /**
- * Defines a JavaFX Rectangle that implements the Drawable interface and the Cloneable interface
+ * Defines a JavaFX Rectangle that implements the Drawable interface and the
+ * Cloneable interface
+ * 
  * @see Cloneable
  * @see Drawable
  * @author Fawaz
  * @see javafx.scene.shape.Rectangle
  */
 public class Rectangle extends javafx.scene.shape.Rectangle implements Drawable, Cloneable {
-	
-    /**
-     * Creates an empty instance of Rectangle with a default transparent fill and a black border
-     */
+	boolean isTransformed = false;
+
+	/**
+	 * Creates an empty instance of Rectangle with a default transparent fill and a
+	 * black border
+	 */
 	public Rectangle() {
 		super();
 		setFill(Color.TRANSPARENT);
 		setStroke(Color.BLACK);
 		EnableDrawing(this);
 	}
-	
-    /**
-     * Creates a new instance of Rectangle with the given position and size.
-     * @param x horizontal position of the rectangle
-     * @param y vertical position of the rectangle
-     * @param width width of the rectangle
-     * @param height height of the rectangle
-     */
+
+	/**
+	 * Creates a new instance of Rectangle with the given position and size.
+	 * 
+	 * @param x      horizontal position of the rectangle
+	 * @param y      vertical position of the rectangle
+	 * @param width  width of the rectangle
+	 * @param height height of the rectangle
+	 */
 	public Rectangle(double x, double y, double width, double height) {
 		super(x, y, width, height);
 		setFill(Color.TRANSPARENT);
 		setStroke(Color.BLACK);
 		EnableDrawing(this);
 	}
-	
-    /**
-     * Creates a new instance of Rectangle with the given position, size, and color
-     * @param x horizontal position of the rectangle
-     * @param y vertical position of the rectangle
-     * @param width width of the rectangle
-     * @param height height of the rectangle
-     * @param fill fill color of the rectangle
-     * @param border border color of the rectangle
-     */
+
+	/**
+	 * Creates a new instance of Rectangle with the given position, size, and color
+	 * 
+	 * @param x      horizontal position of the rectangle
+	 * @param y      vertical position of the rectangle
+	 * @param width  width of the rectangle
+	 * @param height height of the rectangle
+	 * @param fill   fill color of the rectangle
+	 * @param border border color of the rectangle
+	 */
 	public Rectangle(double x, double y, double width, double height, Paint fill, Paint border) {
 		this(x, y, width, height);
 		setFill(fill);
 		setStroke(border);
 	}
-	
+
 	public Rectangle(Rectangle otherRectangle) {
-		this(otherRectangle.getX(), otherRectangle.getY(), otherRectangle.getWidth(), otherRectangle.getHeight()
-			, otherRectangle.getFill(), otherRectangle.getStroke());
+		this(otherRectangle.getX(), otherRectangle.getY(), otherRectangle.getWidth(), otherRectangle.getHeight(),
+				otherRectangle.getFill(), otherRectangle.getStroke());
 	}
 
 	public Rectangle(Paint fill, Paint border) {
@@ -65,13 +72,21 @@ public class Rectangle extends javafx.scene.shape.Rectangle implements Drawable,
 		setStroke(border);
 	}
 
-	 /** Draws a rectangle.
-	 * @param startingX the X coordinate of the user mouse when a press is registered
-	 * @param startingY the Y coordinate of the user mouse when a press is registered
-	 * @param event the MouseEvent provided by the handler
+	/**
+	 * Draws a rectangle.
+	 * 
+	 * @param startingX the X coordinate of the user mouse when a press is
+	 *                  registered
+	 * @param startingY the Y coordinate of the user mouse when a press is
+	 *                  registered
+	 * @param event     the MouseEvent provided by the handler
 	 * @see MouseEvent
 	 */
 	public void draw(MouseEvent event, double startingX, double startingY) {
+		if (isTransformed) {
+			this.getTransforms().clear();
+			isTransformed = false;
+		}
 		double currentX = event.getX();
 		double currentY = event.getY();
 		setWidth(Math.abs(currentX - startingX));
@@ -79,25 +94,26 @@ public class Rectangle extends javafx.scene.shape.Rectangle implements Drawable,
 		if (currentX > startingX && currentY > startingY) {
 			setX(startingX);
 			setY(startingY);
-		}
-		else if (currentX < startingX && currentY > startingY) {
+		} else if (currentX < startingX && currentY > startingY) {
 			setX(currentX);
 			setY(startingY);
-		}
-		else if (currentX > startingX && currentY < startingY) {
+		} else if (currentX > startingX && currentY < startingY) {
 			setX(startingX);
 			setY(currentY);
-		}
-		else if (currentX < startingX && currentY < startingY) {
+		} else if (currentX < startingX && currentY < startingY) {
 			setX(currentX);
 			setY(currentY);
 		}
 	}
-	
-	 /** Draws the rectangle as a square.
-	 * @param startingX the X coordinate of the user mouse when a press is registered
-	 * @param startingY the Y coordinate of the user mouse when a press is registered
-	 * @param event the MouseEvent provided by the handler
+
+	/**
+	 * Draws the rectangle as a square.
+	 * 
+	 * @param startingX the X coordinate of the user mouse when a press is
+	 *                  registered
+	 * @param startingY the Y coordinate of the user mouse when a press is
+	 *                  registered
+	 * @param event     the MouseEvent provided by the handler
 	 * @see MouseEvent
 	 */
 	public void alternativeDraw(MouseEvent event, double startingX, double startingY) {
@@ -108,24 +124,33 @@ public class Rectangle extends javafx.scene.shape.Rectangle implements Drawable,
 			setHeight(getWidth());
 			setX(startingX);
 			setY(startingY);
-		}
-		else if (currentX < startingX && currentY > startingY) {
+		} else if (currentX < startingX && currentY > startingY) {
+			if (isTransformed) {
+				this.getTransforms().clear();
+				isTransformed = false;
+			}
 			setWidth(Math.abs(currentX - startingX));
 			setHeight(getWidth());
 			setX(currentX);
 			setY(startingY);
-		}
-		else if (currentX > startingX && currentY < startingY) {
+		} else if (currentX > startingX && currentY < startingY) {
+			if (isTransformed) {
+				this.getTransforms().clear();
+				isTransformed = false;
+			}
 			setHeight(Math.abs(currentY - startingY));
 			setWidth(getHeight());
 			setX(startingX);
 			setY(currentY);
-		}
-		else if (currentX < startingX && currentY < startingY) {
-			setHeight(Math.abs(currentX - startingX));
-			setWidth(getHeight());
-			setX(currentX);
-			setY(currentY);
+		} else if (currentX < startingX && currentY < startingY) {
+			setX(startingX);
+			setY(startingY);
+			setWidth(Math.abs(currentX - startingX));
+			setHeight(getWidth());
+			if (!isTransformed) {
+				rotateBy(180);
+				this.isTransformed = true;
+			}
 		}
 	}
 
@@ -134,15 +159,33 @@ public class Rectangle extends javafx.scene.shape.Rectangle implements Drawable,
 		return new Rectangle(this);
 	}
 	
+//	private boolean isRotated() {
+//		if (isTransformed) {
+//			return true;
+//		} else
+//			return false;
+//	}
+	
+	public void rotateBy(double degree) {
+			Rotate rotate = new Rotate();
+			rotate.setAngle(180);
+			// Setting pivot points for the rotation
+			rotate.setPivotX(getX());
+			rotate.setPivotY(getY());
+			this.getTransforms().addAll(rotate);
+	}
+
 	/**
-	 * clones the rectangle and adds a positive shift (bottom-right) to it's center coordinates. used by duplicate()
-	 * @param offset the shift 
+	 * clones the rectangle and adds a positive shift (bottom-right) to it's center
+	 * coordinates. used by duplicate()
+	 * 
+	 * @param offset the shift
 	 * @see Model.duplicate
 	 */
 	protected Rectangle clone(double offset) {
 		Rectangle offsetRectangle = new Rectangle(this);
-		offsetRectangle.setX(offsetRectangle.getX()+offset);
-		offsetRectangle.setY(offsetRectangle.getY()+offset);
+		offsetRectangle.setX(offsetRectangle.getX() + offset);
+		offsetRectangle.setY(offsetRectangle.getY() + offset);
 		return offsetRectangle;
 	}
 
@@ -155,6 +198,5 @@ public class Rectangle extends javafx.scene.shape.Rectangle implements Drawable,
 	public DoubleProperty getHeightProperty() {
 		return super.heightProperty();
 	}
-	
-	
+
 }

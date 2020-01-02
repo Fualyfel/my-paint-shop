@@ -116,13 +116,13 @@ public class Model {
 	 *                  shape
 	 * @param pane      the pane onto which the shape will be added.
 	 */
-	public void addShapeToPane(String shapeName, Paint border, Paint fill, MouseEvent event, Pane pane) {
+	public void addShapeToPane(String shapeName, Paint border, Paint fill, MouseEvent event, Pane pane, GraphicsContext gc) {
 		startingX = event.getX();
 		startingY = event.getY();
 		System.out.println("Drag Detected: X : " + startingX + " Y: " + startingY);
 		shape = createShape(shapeName, fill, border);
 		pane.getChildren().add(shape);
-		saveState(pane, controller.canvas);
+		saveState(pane);
 	}
 
 	/**
@@ -146,6 +146,8 @@ public class Model {
 	public void alternativeDrawShape(MouseEvent event, Shape shape) {
 		((Drawable) shape).alternativeDraw(event, startingX, startingY);
 	}
+	
+	
 
 	/**
 	 * Draws on the canvas on the place where the MouseEvent was triggered
@@ -158,6 +160,7 @@ public class Model {
 	 */
 	public void drawBrush(MouseEvent event, GraphicsContext context, Paint strokeColor) {
 		context.setStroke(strokeColor);
+		context.getCanvas().toFront();
 		if (event.getEventType() == MouseEvent.MOUSE_PRESSED) {
 			context.setLineWidth(3);
 			context.beginPath();
@@ -185,13 +188,32 @@ public class Model {
 					selectedShape);
 			selectedShape = (Shape) event.getSource();
 			System.out.println("Selected: " + selectedShape.getClass());
-			attachBoundingRectangle((Node) selectedShape);
+			controller.mainPane.getChildren().removeIf(candidate -> candidate instanceof ResizingControl);
+            ResizingControl resizingControl = new ResizingControl(selectedShape);
+            controller.mainPane.getChildren().add(resizingControl);
 			bindPropertyToShape(controller.horizontalField.textProperty(), controller.verticalField.textProperty(),
 					selectedShape);
 			controller.selectedFill.valueProperty().setValue((Color) selectedShape.fillProperty().getValue());
 			controller.selectedBorder.valueProperty().setValue((Color) selectedShape.strokeProperty().getValue());
 		}
 	}
+	
+//	private void makeSelectable(Node... nodes) {
+//        for (Node node: nodes) {
+//            node.setOnMouseClicked(event -> {
+//                if (selectedNode != node) {
+//                    root.getChildren().removeIf(candidate -> candidate instanceof ResizingControl);
+//                    selectedNode = node;
+//
+//                    node.toFront();
+//                    ResizingControl resizingControl = new ResizingControl(node);
+//                    root.getChildren().add(resizingControl);
+//                }
+//
+//                event.consume();
+//            });
+//        }
+//    }
 
 	/**
 	 * Binds the shape width and height properties to the TextField's
@@ -208,12 +230,6 @@ public class Model {
 		StringConverter<Number> converter = new NumberStringConverter();
 		Bindings.bindBidirectional(width, shapeWidthProperty, converter);
 		Bindings.bindBidirectional(height, shapeHeightProperty, converter);
-		width.addListener((observable, oldVal, newVal) -> {
-			attachBoundingRectangle(selectedShape);
-		});
-		height.addListener((observable, oldVal, newVal) -> {
-			attachBoundingRectangle(selectedShape);
-		});
 	}
 
 	/**
@@ -242,7 +258,7 @@ public class Model {
 		unbindPropertyToShape(controller.horizontalField.textProperty(), controller.verticalField.textProperty(),
 				selectedShape);
 		selectedShape = null;
-		controller.mainPane.getChildren().remove(boundary);
+		controller.mainPane.getChildren().removeIf(candidate -> candidate instanceof ResizingControl);
 	}
 
 	/**
@@ -251,21 +267,21 @@ public class Model {
 	 * @param node the node to be bounded (defaultValue: selectedShape)
 	 * @see Bounds
 	 */
-	public void attachBoundingRectangle(Node node) {
-		Bounds bounds = node.getBoundsInParent();
-
-		boundary.setStyle("-fx-stroke: forestgreen; " + "-fx-stroke-width: 2px; " + "-fx-stroke-dash-array: 12 2 4 2; "
-				+ "-fx-stroke-dash-offset: 6; " + "-fx-stroke-line-cap: butt; " + "-fx-fill: rgba(255, 228, 118, .5);");
-
-		boundary.setX(bounds.getMinX());
-		boundary.setY(bounds.getMinY());
-		boundary.setWidth(bounds.getWidth());
-		boundary.setHeight(bounds.getHeight());
-		if (controller.mainPane.getChildren().contains((boundary))) {
-			controller.mainPane.getChildren().remove(boundary);
-		}
-		controller.mainPane.getChildren().add(boundary);
-	}
+//	public void attachBoundingRectangle(Node node) {
+//		Bounds bounds = node.getBoundsInParent();
+//
+//		boundary.setStyle("-fx-stroke: green; " + "-fx-stroke-width: 2px; " + "-fx-stroke-dash-array: 12 2 4 2; "
+//				+ "-fx-stroke-dash-offset: 6; " + "-fx-stroke-line-cap: butt; " + "-fx-fill: rgba(51, 204, 255, .5);");
+//
+//		boundary.setX(bounds.getMinX());
+//		boundary.setY(bounds.getMinY());
+//		boundary.setWidth(bounds.getWidth());
+//		boundary.setHeight(bounds.getHeight());
+//		if (controller.mainPane.getChildren().contains((boundary))) {
+//			controller.mainPane.getChildren().remove(boundary);
+//		}
+//		controller.mainPane.getChildren().add(boundary);
+//	}
 
 	/**
 	 * Copies the shape passed to this method. The copied shape is saved in the
@@ -291,7 +307,7 @@ public class Model {
 	 * in the model
 	 * 
 	 * @param shape the shape to be copied and deleted
-	 * @param pane  the pane wher ethe shape is located
+	 * @param pane  the pane where the shape is located
 	 */
 	public void cutShape(Shape shape, Pane pane) {
 		copyShape(shape, pane);
@@ -312,8 +328,8 @@ public class Model {
 	 * deletes the shape by removing it from the pane.
 	 */
 	public void deleteShape(Shape shape, Pane pane) {
-		saveState(pane, controller.canvas);
 		deSelectShape();
+		saveState(pane);
 		pane.getChildren().remove(shape);
 	}
 
@@ -326,6 +342,7 @@ public class Model {
 			pane.getChildren().remove(s);
 		}
 	}
+	
 
 	public void saveFile() {
 		File file = FileManager.fileSaver();
@@ -355,7 +372,7 @@ public class Model {
 	 */
 	public void saveAsImage(Pane pane, File file) {
 		try {
-			WritableImage image = getImagefromNode(pane);
+			WritableImage image = createImage(pane, 4);
 			BufferedImage bImage = SwingFXUtils.fromFXImage(image, null);
 			ImageIO.write(bImage, "png", file);
 		} catch (Exception e) {
@@ -409,7 +426,7 @@ public class Model {
 	 * @throws Exception
 	 */
 	public void duplicateShape(Shape selectedShape, Pane pane) {
-		saveState(pane, controller.canvas);
+		saveState(pane);
 		final double offset = 40;
 		System.out.println("selected Shape name: " + selectedShape.getClass().getName());
 		if (selectedShape instanceof Ellipse) {
@@ -431,26 +448,25 @@ public class Model {
 	}
 
 	/**
-	 * loads the previous State object. and adds its shapes to the pane after
-	 * clearing it, and prints its image to the canvas
+	 * loads the previous State object. and adds its node to the pane after
+	 * clearing the pane.
 	 * 
 	 * @param pane   the pane to be Undoed
 	 * @param canvas the canvas to be cleared and redrawn
 	 * @see State
 	 */
-	public void undo(Pane pane, Canvas canvas) {
+	public void undo(Pane pane) {
 		try {
+			deSelectShape();
 			if (states.size() > 1)
 				states.pop();
 			State previousState = states.get(states.size() - 1);
-			ArrayList<Shape> previousShapes = previousState.getShapeList();
-			WritableImage previousImage = (WritableImage) previousState.getImage();
-			deleteAllShapes(getShapes(pane), pane);
-			pane.getChildren().addAll(previousShapes);
-			GraphicsContext graphicsCon = canvas.getGraphicsContext2D();
-			graphicsCon.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
-			graphicsCon.drawImage(previousImage, 0, 0);
+			System.out.println("before clearing pane children: " + pane.getChildren());
+			pane.getChildren().clear();
+			pane.getChildren().addAll(previousState.getNodes());
+			
 			System.out.println("previous state restored");
+			System.out.println("previous state nodes: " + previousState.getNodes());
 
 		} catch (Exception e) {
 			System.out.println("Nothing to undo. " + e.getMessage());
@@ -458,7 +474,7 @@ public class Model {
 	}
 
 	/**
-	 * creates a new State object from the current pane and canvas, and pushes it to
+	 * creates a new State object from the current pane, and pushes it to
 	 * the state stack.
 	 * 
 	 * @param pane   the pane which will get its objects saved onto State
@@ -466,11 +482,9 @@ public class Model {
 	 * @see State
 	 * @see Model.undo
 	 */
-	public void saveState(Pane pane, Canvas canvas) {
-		WritableImage image = getImagefromNode(canvas);
-		ArrayList<Shape> shapes = new ArrayList<Shape>();
-		shapes = getShapes(pane);
-		State s = new State(shapes, image);
+	public void saveState(Pane pane) {
+		State s;
+		s = new State(pane.getChildren());
 		getStates().push(s);
 		System.out.println("state is saved.");
 	}
@@ -482,7 +496,6 @@ public class Model {
 	 * @param canvas
 	 */
 	public void resetPaneAndCanvas(Pane mainPane, Canvas canvas) {
-		saveState(mainPane, canvas);
 		deleteAllShapes(getShapes(mainPane), mainPane);
 		GraphicsContext graphicsCon = canvas.getGraphicsContext2D();
 		graphicsCon.clearRect(canvas.getLayoutX(), canvas.getLayoutY(), canvas.getWidth(), canvas.getHeight());
@@ -526,13 +539,19 @@ public class Model {
 	 * returns an image from a node by taking a snapshot of it
 	 * 
 	 * @param node
+	 * @param scale
 	 * @return image snapshot of the node
 	 * @see javafx.scene.Node.snapshot
 	 */
-	public WritableImage getImagefromNode(Node node) {
-		SnapshotParameters params = new SnapshotParameters();
-		params.setFill(Color.TRANSPARENT);
-		WritableImage image = node.snapshot(params, null);
-		return image;
-	}
+    private static WritableImage createImage(Node node, int scale) {
+        final Bounds bounds = node.getLayoutBounds();
+
+        final WritableImage image = new WritableImage(
+            (int) Math.round(bounds.getWidth() * scale),
+            (int) Math.round(bounds.getHeight() * scale));
+
+        final SnapshotParameters spa = new SnapshotParameters();
+        spa.setTransform(javafx.scene.transform.Transform.scale(scale, scale));
+        return node.snapshot(spa, image);
+    }
 }

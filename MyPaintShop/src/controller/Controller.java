@@ -24,9 +24,10 @@ import javafx.scene.shape.Shape;
 import model.Model;
 import model.State;
 import view.aboutWindow;
+
 /**
- * Handles all user interaction, such as clicks, drags, keyboard presses, and calls the
- * appropriate methods in the model.
+ * Handles all user interaction, such as clicks, drags, keyboard presses, and
+ * calls the appropriate methods in the model.
  */
 public class Controller {
 	private Model model;
@@ -80,13 +81,14 @@ public class Controller {
 	@FXML
 	public ColorPicker selectedFill;
 	ToggleGroup shapeGroup = new ToggleGroup();
-	
+
 	public void setModel(Model model) {
 		this.model = model;
 	}
 
 	/**
-	 * initialize() is called whenever the controller is initialized (application starts.)
+	 * initialize() is called whenever the controller is initialized (application
+	 * starts.)
 	 */
 	@FXML
 	private void initialize() {
@@ -95,7 +97,7 @@ public class Controller {
 		bindCanvasToPane();
 		clipChildren(mainPane);
 		mainPane.getParent().setOnKeyPressed(new ShortcutController());
-		model.getStates().push(new State(model.getShapes(mainPane), model.getImagefromNode(canvas)));
+		model.getStates().push(new State(mainPane.getChildren()));
 		mainPane.addEventHandler(MouseEvent.MOUSE_RELEASED, new StateController());
 		mainPane.addEventHandler(MouseEvent.MOUSE_CLICKED, new Click());
 		canvas.addEventHandler(MouseEvent.DRAG_DETECTED, new DragStarter());
@@ -148,17 +150,15 @@ public class Controller {
 		});
 		selectedFill.valueProperty().addListener((ov, oldVal, newVal) -> {
 			try {
-			model.saveState(mainPane, canvas);
-			model.selectedShape.setFill(newVal);
+				model.selectedShape.setFill(newVal);
 			} catch (Exception e) {
 				System.out.println("No shape selected: " + e);
 			}
 		});
-		
+
 		selectedBorder.valueProperty().addListener((ov, oldVal, newVal) -> {
 			try {
-			model.saveState(mainPane, canvas);
-			model.selectedShape.setStroke(newVal);
+				model.selectedShape.setStroke(newVal);
 			} catch (Exception e) {
 				System.out.println("No shape selected: " + e);
 			}
@@ -166,7 +166,7 @@ public class Controller {
 	}
 
 	/**
-	 * Initial handler for shape drawing process.
+	 * Initial handler for drawing process.
 	 */
 	public class DragStarter implements EventHandler<MouseEvent> {
 		@Override
@@ -174,13 +174,17 @@ public class Controller {
 			((Node) event.getSource()).startFullDrag();
 			if (shapeGroup.getSelectedToggle() != brushToggle) {
 				if (shapeGroup.getSelectedToggle() == circleToggle) {
-					model.addShapeToPane("ellipse", borderColor.getValue(), fillColor.getValue(), event, mainPane);
+					model.addShapeToPane("ellipse", borderColor.getValue(), fillColor.getValue(), event, mainPane,
+							canvas.getGraphicsContext2D());
 				} else if (shapeGroup.getSelectedToggle() == rectangleToggle) {
-					model.addShapeToPane("rectangle", borderColor.getValue(), fillColor.getValue(), event, mainPane);
+					model.addShapeToPane("rectangle", borderColor.getValue(), fillColor.getValue(), event, mainPane,
+							canvas.getGraphicsContext2D());
 				} else if (shapeGroup.getSelectedToggle() == triangleToggle) {
-					model.addShapeToPane("triangle", borderColor.getValue(), fillColor.getValue(), event, mainPane);
+					model.addShapeToPane("triangle", borderColor.getValue(), fillColor.getValue(), event, mainPane,
+							canvas.getGraphicsContext2D());
 				} else if (shapeGroup.getSelectedToggle() == lineToggle) {
-					model.addShapeToPane("line", borderColor.getValue(), fillColor.getValue(), event, mainPane);
+					model.addShapeToPane("line", borderColor.getValue(), fillColor.getValue(), event, mainPane,
+							canvas.getGraphicsContext2D());
 				}
 			}
 		}
@@ -194,6 +198,14 @@ public class Controller {
 		public void handle(MouseEvent event) {
 			System.out.println("Pressed");
 			if (shapeGroup.getSelectedToggle() == brushToggle) {
+				Canvas c = new Canvas(canvas.getWidth(), canvas.getHeight());
+				mainPane.getChildren().add(c);
+				canvas = c;
+				canvas.addEventHandler(MouseEvent.DRAG_DETECTED, new DragStarter());
+				canvas.setOnMouseDragOver(new Drag());
+				canvas.setOnMousePressed(new BrushDraw());
+				canvas.setMouseTransparent(true);
+				System.out.println(mainPane.getChildren());
 				model.drawBrush(event, canvas.getGraphicsContext2D(), fillColor.getValue());
 			}
 		}
@@ -202,6 +214,7 @@ public class Controller {
 
 	/**
 	 * Handles the dragging event for both shape and brush mouse drags.
+	 * 
 	 * @author Fawaz
 	 *
 	 */
@@ -223,26 +236,31 @@ public class Controller {
 		}
 
 	}
+
 	/**
 	 * Handles shape selection process
+	 * 
 	 * @author Fawaz
 	 */
 	public class Click implements EventHandler<MouseEvent> {
 		@Override
 		public void handle(MouseEvent event) {
-			System.out.println("Target: " + event.getTarget());
-			if (event.getTarget() instanceof Shape && (shapeGroup.getSelectedToggle() != brushToggle)) {
-				System.out.println("selected");
-				model.selectShape(event);
-			} else {
-				System.out.println("deselected");
-				model.deSelectShape();
+			if (event.isStillSincePress()) {
+				System.out.println("Target: " + event.getTarget());
+				if (event.getTarget() instanceof Shape && (shapeGroup.getSelectedToggle() == null)) {
+					System.out.println("selected");
+					model.selectShape(event);
+				} else {
+					System.out.println("deselected");
+					model.deSelectShape();
+				}
 			}
 		}
 	}
 
 	/**
 	 * Handles all the menu items' ActionEvents.
+	 * 
 	 * @author Fawaz
 	 * @see ActionEvent
 	 */
@@ -258,7 +276,7 @@ public class Controller {
 			} else if (event.getSource() == quit) {
 				model.quit();
 			} else if (event.getSource() == undo) {
-				model.undo(mainPane, canvas);
+				model.undo(mainPane);
 			} else if (event.getSource() == cut) {
 				model.cutShape(model.selectedShape, mainPane);
 			} else if (event.getSource() == copy) {
@@ -276,6 +294,7 @@ public class Controller {
 
 	/**
 	 * Handles all the buttons' ActionEvents.
+	 * 
 	 * @author Fawaz
 	 * @see ActionEvent
 	 */
@@ -297,6 +316,7 @@ public class Controller {
 
 	/**
 	 * Handles all possible keyboard shortcuts
+	 * 
 	 * @author Fawaz
 	 */
 	public class ShortcutController implements EventHandler<KeyEvent> {
@@ -311,7 +331,7 @@ public class Controller {
 		@Override
 		public void handle(KeyEvent event) {
 			if (undoShortcut.match(event)) {
-				model.undo(mainPane, canvas);
+				model.undo(mainPane);
 			} else if (newFileShortcut.match(event)) {
 				model.resetPaneAndCanvas(mainPane, canvas);
 			} else if (saveFileShortcut.match(event)) {
@@ -327,12 +347,15 @@ public class Controller {
 					System.out.println("No shape selected");
 					e.printStackTrace();
 				}
+			} else if (event.getCode() == KeyCode.DELETE) {
+				model.deleteShape(model.selectedShape, mainPane);
 			}
 		}
 	}
-	
+
 	/**
 	 * Handles all events related to {@link State state} management
+	 * 
 	 * @author Fawaz
 	 * @param <T> the type of the event
 	 */
@@ -341,14 +364,11 @@ public class Controller {
 		@Override
 		public void handle(T event) {
 			if (shapeGroup.getSelectedToggle() == brushToggle && !(event.getTarget() instanceof Shape)) {
-				model.saveState(mainPane, canvas);
+				model.saveState(mainPane);
 				System.out.println("from Stroke");
 			}
 		}
 	}
-	
-	
-	
 
 	/**
 	 * method that helps with resizing the canvas

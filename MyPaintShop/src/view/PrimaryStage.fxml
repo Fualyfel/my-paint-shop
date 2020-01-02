@@ -56,7 +56,7 @@
     </MenuBar>
       <ToolBar prefHeight="40.0" prefWidth="200.0">
         <items>
-          <Button fx:id="removeButton" mnemonicParsing="false" text="Rmove Shape" />
+          <Button fx:id="removeButton" mnemonicParsing="false" text="Remove Shape" />
             <Button fx:id="duplicateButton" mnemonicParsing="false" text="Duplicate Shape" />
         </items>
       </ToolBar>
@@ -132,7 +132,7 @@
       </SplitPane>
       <Pane fx:id="mainPane" style="-fx-background-color: WHITE;" VBox.vgrow="ALWAYS">
          <children>
-            <Canvas fx:id="canvas" height="500.0" width="1271.0" />
+            <Canvas fx:id="canvas" height="492.0" width="1271.0" />
          </children>
          <cursor>
             <Cursor fx:constant="CROSSHAIR" />
