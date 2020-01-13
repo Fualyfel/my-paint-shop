@@ -17,7 +17,7 @@ import javafx.scene.transform.Rotate;
  * @see javafx.scene.shape.Rectangle
  */
 public class Rectangle extends javafx.scene.shape.Rectangle implements Drawable, Cloneable {
-	boolean isTransformed = false;
+	private boolean isTransformed = false;
 
 	/**
 	 * Creates an empty instance of Rectangle with a default transparent fill and a
@@ -149,7 +149,7 @@ public class Rectangle extends javafx.scene.shape.Rectangle implements Drawable,
 			setHeight(getWidth());
 			if (!isTransformed) {
 				rotateBy(180);
-				this.isTransformed = true;
+				isTransformed = true;
 			}
 		}
 	}
@@ -158,13 +158,7 @@ public class Rectangle extends javafx.scene.shape.Rectangle implements Drawable,
 	protected Rectangle clone() {
 		return new Rectangle(this);
 	}
-	
-//	private boolean isRotated() {
-//		if (isTransformed) {
-//			return true;
-//		} else
-//			return false;
-//	}
+
 	
 	public void rotateBy(double degree) {
 			Rotate rotate = new Rotate();

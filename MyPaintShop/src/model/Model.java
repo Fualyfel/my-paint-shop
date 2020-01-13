@@ -181,7 +181,7 @@ public class Model {
 		if (event.getSource() instanceof Shape) {
 			/*
 			 * The selection process 1. Unbind the TextFields properties from the previous
-			 * shape 2. Update the selectedShape 3. attach the bound to the shape. 4. set
+			 * shape 2. Update the selectedShape 3. attach the resizing controls to the shape. 4. set
 			 * the color picker's value to the selected shape's color.
 			 */
 			unbindPropertyToShape(controller.horizontalField.textProperty(), controller.verticalField.textProperty(),

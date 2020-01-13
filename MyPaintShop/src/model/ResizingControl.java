@@ -9,7 +9,7 @@ import javafx.scene.paint.Color;
  */
 public class ResizingControl extends Group {
 	private Node targetNode = null;
-    private final Rectangle boundary = new Rectangle();
+    private final javafx.scene.shape.Rectangle boundary = new javafx.scene.shape.Rectangle();
 
     private Anchor topLeft = new Anchor(Color.GOLD, true, true, (oldX, oldY, newX, newY) -> {
         double newWidth = boundary.getWidth() - (newX - oldX);
@@ -150,6 +150,10 @@ public class ResizingControl extends Group {
             Rectangle rectangle = (Rectangle) targetNode;
             rectangle.setX(newX);
             rectangle.setY(newY);
+        } else if (targetNode instanceof Triangle) {
+        	Triangle triangle = (Triangle) targetNode;
+        	triangle.setX(newX);
+        	triangle.setY(newY);
         }
     }
 
@@ -158,7 +162,6 @@ public class ResizingControl extends Group {
             Ellipse ellipse = (Ellipse) targetNode;
             ellipse.setRadiusX(boundary.getWidth() / 2);
             ellipse.setRadiusY(boundary.getHeight() / 2);
-
             relocateTargetNode(boundary.getX(), boundary.getY());
         } else if (targetNode instanceof Rectangle) {
             Rectangle rectangle = (Rectangle) targetNode;
@@ -166,7 +169,10 @@ public class ResizingControl extends Group {
             rectangle.setHeight(boundary.getHeight());
             relocateTargetNode(boundary.getX(), boundary.getY());
         } else if (targetNode instanceof Triangle) {
-        	
+        	Triangle triangle = (Triangle) targetNode;
+        	triangle.setWidth(boundary.getWidth());
+        	triangle.setHeight(boundary.getHeight());
+        	relocateTargetNode(boundary.getX(), boundary.getY());
         }
     }
 

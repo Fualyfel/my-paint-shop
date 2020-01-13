@@ -50,7 +50,7 @@ public class Util {
 	}
 
 	// make a targetNode movable by dragging it around with the mouse.
-	static void makeDraggable(Rectangle node, DragHandler dragHandler) {
+	static void makeDraggable(javafx.scene.shape.Rectangle node, DragHandler dragHandler) {
 		final Delta dragDelta = new Delta();
 
 		node.setOnMouseEntered(me -> {

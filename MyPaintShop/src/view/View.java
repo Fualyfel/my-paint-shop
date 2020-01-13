@@ -26,7 +26,6 @@ public class View extends Application {
         Parent root = loader.load(getClass().getResource("PrimaryStage.fxml"));
         primaryStage.setTitle("My Paint Shop");
         Scene scene = new Scene(root, 1280, 720);
-        primaryStage.setResizable(false);
         primaryStage.setScene(scene); 
         primaryStage.show();
 		

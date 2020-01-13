@@ -8,7 +8,7 @@ import javafx.scene.paint.Color;
 
 /*
  * A regular polygon with n sides
- * to be fully implemented and docnumented after the project finishes.
+ * to be fully implemented and documented after the project finishes.
  */
 public class RegularPolygon extends javafx.scene.shape.Polygon implements Drawable, Cloneable {
 
